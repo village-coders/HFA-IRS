@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HFA UK - Claims Management Dashboard</title>
+    <title>HFA - Claims Management Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -101,27 +101,6 @@
         .form-control:focus {
             outline: none;
             border-color: var(--secondary-color);
-        }
-        
-        .role-selector {
-            display: flex;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .role-option {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            background-color: #e9ecef;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .role-option.active {
-            background-color: var(--primary-color);
-            color: white;
         }
         
         .btn {
@@ -415,6 +394,20 @@
             color: #495057;
         }
         
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -514,6 +507,12 @@
             color: #ccc;
         }
         
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
         @media (max-width: 992px) {
             .sidebar {
                 width: 70px;
@@ -574,11 +573,10 @@
     </style>
 </head>
 <body>
-    <!-- Login Page -->
     <div id="loginPage" class="login-container">
         <div class="login-box">
             <div class="logo">
-                <h1>HFA<span>UK</span></h1>
+                <h1>HFA<span></span></h1>
                 <p>Claims Management Dashboard</p>
             </div>
             
@@ -593,23 +591,27 @@
                     <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
                 </div>
                 
-                <button type="submit" class="btn">Log In</button>
+                <div class="form-group" id="loginError" style="display: none;">
+                    <div class="error-message" id="loginErrorMessage"></div>
+                </div>
+                
+                <button type="submit" class="btn" id="loginButton">
+                    <span id="loginButtonText">Log In</span>
+                    <span id="loginButtonSpinner" class="loading-spinner hidden"></span>
+                </button>
             </form>
             
             <div class="demo-credentials" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: var(--border-radius); font-size: 14px;">
-                <p><strong>Demo Credentials:</strong></p>
-                <p>Admin: admin / admin123</p>
-                <p>Worker 1: HFA-W-1001 / password123</p>
-                <p>Worker 2: HFA-W-1002 / password123</p>
+                <p><strong>Note:</strong> Server sleeps on free tier.</p>
+                <p>If login spins, please wait 60 seconds and try again.</p>
             </div>
         </div>
     </div>
     
-    <!-- Dashboard - Worker -->
     <div id="workerDashboard" class="dashboard-container hidden">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2>HFA UK</h2>
+                <h2>HFA </h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Worker Dashboard</p>
             </div>
             
@@ -618,35 +620,19 @@
                     <i class="fas fa-tasks"></i>
                     <span>Manage Claim Sheet</span>
                 </div>
-                <div class="menu-item" data-section="newClaimList">
-                    <i class="fas fa-list"></i>
-                    <span>New Claim List</span>
-                </div>
-                <div class="menu-item" data-section="verifiedList">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Verified List</span>
-                </div>
-                <div class="menu-item" data-section="pendingList">
-                    <i class="fas fa-clock"></i>
-                    <span>Pending Claim List</span>
-                </div>
                 <div class="menu-item" data-section="newClaim">
                     <i class="fas fa-plus-circle"></i>
                     <span>New Claim</span>
                 </div>
-                <div class="menu-item" data-section="approvedPayment">
-                    <i class="fas fa-pound-sign"></i>
-                    <span>Approved for Payment</span>
-                </div>
-                <div class="menu-item" data-section="furtherRecommendation">
-                    <i class="fas fa-comment-dots"></i>
-                    <span>Further Recommendation List</span>
+                <div class="menu-item" data-section="myClaims">
+                    <i class="fas fa-file-alt"></i>
+                    <span>My Claims</span>
                 </div>
             </div>
             
             <div class="user-info">
-                <p id="workerUserName">John Smith</p>
-                <p id="workerUserId">Worker ID: HFA-W-0823</p>
+                <p id="workerUserName">Loading...</p>
+                <p id="workerUserId">Worker ID: Loading...</p>
                 <a href="#" class="logout-btn" id="workerLogout">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
@@ -702,16 +688,24 @@
                 </div>
             </div>
             
-            <!-- Manage Claim Sheet Section -->
             <div id="manageClaimSection" class="section active">
                 <div class="card">
                     <div class="card-header">
                         <h2>My Claims</h2>
-                        <button class="btn-primary" id="newClaimBtn">New Claim</button>
+                        <div>
+                            <button class="btn-primary" id="refreshClaimsBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn-primary" id="newClaimBtnWorker">New Claim</button>
+                        </div>
                     </div>
                     
                     <div class="table-container">
-                        <table>
+                        <div id="workerClaimsLoading" class="empty-state">
+                            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 20px;"></div>
+                            <p>Loading claims...</p>
+                        </div>
+                        <table id="workerClaimsTable" style="display: none;">
                             <thead>
                                 <tr>
                                     <th>Claim ID</th>
@@ -723,66 +717,149 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="workerClaimsTable">
-                                <!-- Data will be populated by JavaScript -->
-                            </tbody>
+                            <tbody id="workerClaimsTableBody">
+                                </tbody>
                         </table>
+                        <div id="workerClaimsEmpty" class="empty-state" style="display: none;">
+                            <i class="fas fa-inbox"></i>
+                            <p>No claims found</p>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Other sections... (same as before) -->
-            <!-- Note: Other sections are included in the previous code but truncated here for brevity -->
-            <!-- In a full implementation, all sections would be included -->
+            <div id="newClaimSection" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Submit New Claim</h2>
+                        <button class="btn-secondary" id="cancelNewClaimBtn">Cancel</button>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="newClaimForm">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimDate">Date *</label>
+                                        <input type="date" id="claimDate" class="form-control" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimCategory">Category *</label>
+                                        <select id="claimCategory" class="form-control" required>
+                                            <option value="">Select Category</option>
+                                            <option value="Office Supplies">Office Supplies</option>
+                                            <option value="Furniture Repair">Furniture Repair</option>
+                                            <option value="Equipment">Equipment</option>
+                                            <option value="Travel">Travel</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="claimDescription">Description *</label>
+                                <textarea id="claimDescription" class="form-control" rows="3" placeholder="Describe what you fixed or purchased for the company..." required></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimAmount">Amount (£) *</label>
+                                        <input type="number" id="claimAmount" class="form-control" min="0" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimReceipt">Receipt Available?</label>
+                                        <select id="claimReceipt" class="form-control">
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="claimNotes">Additional Notes (Optional)</label>
+                                <textarea id="claimNotes" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
+                            </div>
+                            
+                            <div id="claimFormError" class="form-group" style="display: none;">
+                                <div class="error-message" id="claimFormErrorMessage"></div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="resetClaimForm">Reset</button>
+                                <button type="submit" class="btn-primary" id="submitClaimBtn">
+                                    <span id="submitClaimBtnText">Submit Claim</span>
+                                    <span id="submitClaimBtnSpinner" class="loading-spinner hidden"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="myClaimsSection" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All My Claims</h2>
+                        <button class="btn-primary" id="refreshMyClaimsBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div id="myClaimsLoading" class="empty-state">
+                            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 20px;"></div>
+                            <p>Loading claims...</p>
+                        </div>
+                        <table id="myClaimsTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Claim ID</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myClaimsTableBody">
+                                </tbody>
+                        </table>
+                        <div id="myClaimsEmpty" class="empty-state" style="display: none;">
+                            <i class="fas fa-inbox"></i>
+                            <p>No claims found</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
-    <!-- Dashboard - Admin -->
     <div id="adminDashboard" class="dashboard-container hidden">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2>HFA UK</h2>
+                <h2>HFA </h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Admin Dashboard</p>
             </div>
             
             <div class="sidebar-menu">
                 <div class="menu-item active" data-section="adminManageClaim">
                     <i class="fas fa-tasks"></i>
-                    <span>Manage Claim Sheet</span>
-                </div>
-                <div class="menu-item" data-section="adminNewClaimList">
-                    <i class="fas fa-list"></i>
-                    <span>New Claim List</span>
-                </div>
-                <div class="menu-item" data-section="adminVerifiedList">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Verified List</span>
-                </div>
-                <div class="menu-item" data-section="adminPendingList">
-                    <i class="fas fa-clock"></i>
-                    <span>Pending Claim List</span>
-                </div>
-                <div class="menu-item" data-section="adminRejectedList">
-                    <i class="fas fa-times-circle"></i>
-                    <span>Rejected List</span>
+                    <span>Manage Claims</span>
                 </div>
                 <div class="menu-item" data-section="adminNewClaim">
                     <i class="fas fa-plus-circle"></i>
                     <span>New Claim</span>
                 </div>
-                <div class="menu-item" data-section="adminApprovedPayment">
-                    <i class="fas fa-pound-sign"></i>
-                    <span>Approved for Payment</span>
-                </div>
-                <div class="menu-item" data-section="adminFurtherApproval">
-                    <i class="fas fa-user-check"></i>
-                    <span>Further Approval</span>
-                </div>
-                <div class="menu-item" data-section="adminPaidList">
-                    <i class="fas fa-check-double"></i>
-                    <span>Paid List</span>
-                </div>
-                <!-- NEW SECTION: User Management -->
                 <div class="menu-item" data-section="adminUserManagement">
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
@@ -790,7 +867,7 @@
             </div>
             
             <div class="user-info">
-                <p>Admin User</p>
+                <p id="adminUserName">Admin User</p>
                 <p>Administrator</p>
                 <a href="#" class="logout-btn" id="adminLogout">
                     <i class="fas fa-sign-out-alt"></i>
@@ -801,7 +878,7 @@
         
         <div class="main-content">
             <div class="header">
-                <h1 id="adminPageTitle">Manage Claim Sheet</h1>
+                <h1 id="adminPageTitle">Manage Claims</h1>
                 <div class="date-display" id="adminCurrentDate"></div>
             </div>
             
@@ -847,7 +924,6 @@
                 </div>
             </div>
             
-            <!-- Admin Manage Claim Sheet Section -->
             <div id="adminManageClaimSection" class="section active">
                 <div class="card">
                     <div class="card-header">
@@ -855,24 +931,26 @@
                         <div>
                             <select id="filterStatus" class="form-control" style="display: inline-block; width: auto; margin-right: 10px;">
                                 <option value="all">All Status</option>
-                                <option value="new">New</option>
                                 <option value="pending">Pending</option>
-                                <option value="verified">Verified</option>
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
-                                <option value="paid">Paid</option>
-                                <option value="recommendation">Further Recommendation</option>
                             </select>
-                            <button class="btn-primary" id="adminNewClaimBtn">New Claim</button>
+                            <button class="btn-primary" id="refreshAdminClaimsBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
                         </div>
                     </div>
                     
                     <div class="table-container">
-                        <table>
+                        <div id="adminClaimsLoading" class="empty-state">
+                            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 20px;"></div>
+                            <p>Loading claims...</p>
+                        </div>
+                        <table id="adminClaimsTable" style="display: none;">
                             <thead>
                                 <tr>
                                     <th>Claim ID</th>
-                                    <th>Worker</th>
+                                    <th>User</th>
                                     <th>Date</th>
                                     <th>Description</th>
                                     <th>Category</th>
@@ -881,48 +959,132 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="adminClaimsTable">
-                                <!-- Data will be populated by JavaScript -->
-                            </tbody>
+                            <tbody id="adminClaimsTableBody">
+                                </tbody>
                         </table>
+                        <div id="adminClaimsEmpty" class="empty-state" style="display: none;">
+                            <i class="fas fa-inbox"></i>
+                            <p>No claims found</p>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- NEW SECTION: User Management -->
+            <div id="adminNewClaimSection" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Submit New Claim (Admin)</h2>
+                        <button class="btn-secondary" id="cancelAdminNewClaimBtn">Cancel</button>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form id="adminNewClaimForm">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimDate">Date *</label>
+                                        <input type="date" id="adminClaimDate" class="form-control" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimCategory">Category *</label>
+                                        <select id="adminClaimCategory" class="form-control" required>
+                                            <option value="">Select Category</option>
+                                            <option value="Office Supplies">Office Supplies</option>
+                                            <option value="Furniture Repair">Furniture Repair</option>
+                                            <option value="Equipment">Equipment</option>
+                                            <option value="Travel">Travel</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="adminClaimDescription">Description *</label>
+                                <textarea id="adminClaimDescription" class="form-control" rows="3" placeholder="Describe what you fixed or purchased for the company..." required></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimAmount">Amount (£) *</label>
+                                        <input type="number" id="adminClaimAmount" class="form-control" min="0" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimReceipt">Receipt Available?</label>
+                                        <select id="adminClaimReceipt" class="form-control">
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="adminClaimFormError" class="form-group" style="display: none;">
+                                <div class="error-message" id="adminClaimFormErrorMessage"></div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="resetAdminClaimForm">Reset</button>
+                                <button type="submit" class="btn-primary" id="submitAdminClaimBtn">
+                                    <span id="submitAdminClaimBtnText">Submit Claim</span>
+                                    <span id="submitAdminClaimBtnSpinner" class="loading-spinner hidden"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
             <div id="adminUserManagementSection" class="section">
                 <div class="card">
                     <div class="card-header">
                         <h2>User Management</h2>
-                        <button class="btn-primary" id="addUserBtn">Add New User</button>
+                        <button class="btn-primary" id="createUserBtn">Create New User</button>
                     </div>
                     
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID Number</th>
-                                    <th>Full Name</th>
-                                    <th>Department</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminUsersTable">
-                                <!-- Data will be populated by JavaScript -->
-                            </tbody>
-                        </table>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="userSearch">Search Users</label>
+                            <input type="text" id="userSearch" class="form-control" placeholder="Search by name, email, or ID...">
+                        </div>
+                        
+                        <div class="table-container">
+                            <div id="usersLoading" class="empty-state">
+                                <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 20px;"></div>
+                                <p>Loading users...</p>
+                            </div>
+                            <table id="usersTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    </tbody>
+                            </table>
+                            <div id="usersEmpty" class="empty-state" style="display: none;">
+                                <i class="fas fa-users"></i>
+                                <p>No users found</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Other admin sections... (same as before but truncated for brevity) -->
         </div>
     </div>
     
-    <!-- View Claim Modal -->
     <div id="viewClaimModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -931,63 +1093,31 @@
             </div>
             
             <div id="claimDetails">
-                <!-- Claim details will be populated by JavaScript -->
-            </div>
+                </div>
         </div>
     </div>
     
-    <!-- Recommendation Modal -->
-    <div id="recommendationModal" class="modal">
+    <div id="createUserModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Recommendation</h2>
-                <button class="close-btn" id="closeRecommendationModal">&times;</button>
+                <h2>Create New User</h2>
+                <button class="close-btn" id="closeCreateUserModal">&times;</button>
             </div>
             
-            <div id="recommendationDetails">
-                <div class="form-group">
-                    <label for="recommendationText">Recommendation / Additional Information Required</label>
-                    <textarea id="recommendationText" class="form-control" rows="4" placeholder="Please provide additional information or clarification for this claim..."></textarea>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" id="cancelRecommendation">Cancel</button>
-                    <button type="button" class="btn-primary" id="submitRecommendation">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Add User Modal -->
-    <div id="addUserModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add New User</h2>
-                <button class="close-btn" id="closeAddUserModal">&times;</button>
-            </div>
-            
-            <div id="addUserDetails">
-                <form id="addUserForm">
+            <div id="createUserDetails">
+                <form id="createUserForm">
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="userFullName">Full Name *</label>
-                                <input type="text" id="userFullName" class="form-control" placeholder="Enter full name" required>
+                                <label for="createUserName">Full Name *</label>
+                                <input type="text" id="createUserName" class="form-control" placeholder="Enter full name" required>
                             </div>
                         </div>
                         
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="userDepartment">Department *</label>
-                                <select id="userDepartment" class="form-control" required>
-                                    <option value="">Select Department</option>
-                                    <option value="Operations">Operations</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="HR">Human Resources</option>
-                                    <option value="IT">IT</option>
-                                    <option value="Admin">Administration</option>
-                                    <option value="Maintenance">Maintenance</option>
-                                </select>
+                                <label for="createUserEmail">Email Address *</label>
+                                <input type="email" id="createUserEmail" class="form-control" placeholder="Enter email address" required>
                             </div>
                         </div>
                     </div>
@@ -995,45 +1125,38 @@
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="userEmail">Email Address *</label>
-                                <input type="email" id="userEmail" class="form-control" placeholder="Enter email address" required>
+                                <label for="createUserPassword">Password *</label>
+                                <input type="password" id="createUserPassword" class="form-control" placeholder="Enter password" required>
                             </div>
                         </div>
                         
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="userPhone">Phone Number</label>
-                                <input type="tel" id="userPhone" class="form-control" placeholder="Enter phone number">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="userPassword">Initial Password *</label>
-                                <input type="password" id="userPassword" class="form-control" placeholder="Enter initial password" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="userStatus">Account Status</label>
-                                <select id="userStatus" class="form-control">
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
+                                <label for="createUserRole">Role *</label>
+                                <select id="createUserRole" class="form-control" required>
+                                    <option value="">Select Role</option>
+                                    <option value="worker">Worker</option>
+                                    <option value="admin">Administrator</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <p><strong>Note:</strong> User ID will be automatically generated in the format: HFA-W-XXXX</p>
+                        <label for="createUserDepartment">Department</label>
+                        <input type="text" id="createUserDepartment" class="form-control" placeholder="Enter department (optional)">
+                    </div>
+                    
+                    <div id="createUserFormError" class="form-group" style="display: none;">
+                        <div class="error-message" id="createUserFormErrorMessage"></div>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn-secondary" id="cancelAddUser">Cancel</button>
-                        <button type="submit" class="btn-primary">Create User Account</button>
+                        <button type="button" class="btn-secondary" id="cancelCreateUser">Cancel</button>
+                        <button type="submit" class="btn-primary" id="submitCreateUserBtn">
+                            <span id="submitCreateUserBtnText">Create User</span>
+                            <span id="submitCreateUserBtnSpinner" class="loading-spinner hidden"></span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1041,56 +1164,24 @@
     </div>
 
     <script>
-        // User data storage
-        let users = [
-            { id: "admin", password: "admin123", name: "Admin User", role: "admin", department: "Administration", email: "admin@hfa-uk.com", phone: "N/A", status: "active" },
-            { id: "HFA-W-1001", password: "password123", name: "John Smith", role: "worker", department: "Operations", email: "john.smith@hfa-uk.com", phone: "07123 456789", status: "active" },
-            { id: "HFA-W-1002", password: "password123", name: "Sarah Johnson", role: "worker", department: "Finance", email: "sarah.johnson@hfa-uk.com", phone: "07234 567890", status: "active" },
-            { id: "HFA-W-1003", password: "password123", name: "Michael Brown", role: "worker", department: "Maintenance", email: "michael.brown@hfa-uk.com", phone: "07345 678901", status: "active" },
-            { id: "HFA-W-1004", password: "password123", name: "Emma Wilson", role: "worker", department: "HR", email: "emma.wilson@hfa-uk.com", phone: "07456 789012", status: "inactive" }
-        ];
+        // API Configuration
+        // Using a CORS proxy to bypass the restriction for localhost testing
+        const API_BASE_URL = 'https://hfa-internal-record-system.onrender.com/api';
         
-        // Claims data storage - Now linked to user IDs
-        let claims = [
-            { id: "HFA-C-1001", userId: "HFA-W-1001", date: "2023-10-15", description: "Fixed office chair - replaced wheels and hydraulic lever", category: "Furniture Repair", amount: "£45.00", status: "approved", notes: "Receipt attached", receipt: "yes" },
-            { id: "HFA-C-1002", userId: "HFA-W-1001", date: "2023-10-18", description: "Purchased printer toner for office printer", category: "Office Supplies", amount: "£32.50", status: "approved", notes: "Emergency purchase", receipt: "yes" },
-            { id: "HFA-C-1003", userId: "HFA-W-1001", date: "2023-10-22", description: "Fixed leaking tap in office kitchen", category: "Other", amount: "£18.75", status: "pending", notes: "Used spare parts from storage", receipt: "no" },
-            { id: "HFA-C-1004", userId: "HFA-W-1001", date: "2023-10-25", description: "Replaced broken keyboard", category: "Equipment", amount: "£28.99", status: "new", notes: "Logitech keyboard", receipt: "yes" },
-            { id: "HFA-C-1005", userId: "HFA-W-1002", date: "2023-10-28", description: "Purchased first aid kit refill", category: "Office Supplies", amount: "£24.50", status: "verified", notes: "", receipt: "yes" },
-            { id: "HFA-C-1006", userId: "HFA-W-1002", date: "2023-11-02", description: "Taxi fare for client meeting", category: "Travel", amount: "£32.00", status: "approved", notes: "From office to client site", receipt: "yes" },
-            { id: "HFA-C-1007", userId: "HFA-W-1002", date: "2023-11-05", description: "Replaced office chair casters", category: "Furniture Repair", amount: "£22.00", status: "rejected", notes: "Not pre-approved", receipt: "yes" },
-            { id: "HFA-C-1008", userId: "HFA-W-1003", date: "2023-11-08", description: "Purchased stationery for team", category: "Office Supplies", amount: "£65.25", status: "recommendation", notes: "Need approval from manager", receipt: "yes" },
-            { id: "HFA-C-2001", userId: "HFA-W-1003", date: "2023-10-12", description: "Fixed photocopier paper jam mechanism", category: "Equipment", amount: "£65.00", status: "approved", notes: "Technical repair", receipt: "yes" },
-            { id: "HFA-C-2002", userId: "HFA-W-1004", date: "2023-10-14", description: "Purchased whiteboard markers and erasers", category: "Office Supplies", amount: "£18.50", status: "approved", notes: "For conference room", receipt: "yes" },
-            { id: "HFA-C-2003", userId: "admin", date: "2023-11-10", description: "Software license renewal", category: "Equipment", amount: "£299.00", status: "paid", notes: "Annual subscription", receipt: "yes", paymentDate: "2023-11-15" }
-        ];
-        
-        // Current user and role
+        // Current user data
         let currentUser = null;
-        let currentRole = null;
-        let currentClaimIdForRecommendation = null;
+        let authToken = null;
         
         // DOM elements
         const loginPage = document.getElementById('loginPage');
         const workerDashboard = document.getElementById('workerDashboard');
         const adminDashboard = document.getElementById('adminDashboard');
         const loginForm = document.getElementById('loginForm');
-        const workerLogout = document.getElementById('workerLogout');
-        const adminLogout = document.getElementById('adminLogout');
-        const viewClaimModal = document.getElementById('viewClaimModal');
-        const closeViewModalBtn = document.getElementById('closeViewModal');
-        const newClaimBtn = document.getElementById('newClaimBtn');
-        const adminNewClaimBtn = document.getElementById('adminNewClaimBtn');
-        const filterStatus = document.getElementById('filterStatus');
-        const recommendationModal = document.getElementById('recommendationModal');
-        const closeRecommendationModalBtn = document.getElementById('closeRecommendationModal');
-        const cancelRecommendationBtn = document.getElementById('cancelRecommendation');
-        const submitRecommendationBtn = document.getElementById('submitRecommendation');
-        const addUserModal = document.getElementById('addUserModal');
-        const closeAddUserModalBtn = document.getElementById('closeAddUserModal');
-        const cancelAddUserBtn = document.getElementById('cancelAddUser');
-        const addUserForm = document.getElementById('addUserForm');
-        const addUserBtn = document.getElementById('addUserBtn');
+        const loginButton = document.getElementById('loginButton');
+        const loginButtonText = document.getElementById('loginButtonText');
+        const loginButtonSpinner = document.getElementById('loginButtonSpinner');
+        const loginError = document.getElementById('loginError');
+        const loginErrorMessage = document.getElementById('loginErrorMessage');
         
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -1108,93 +1199,108 @@
             
             // Set default date in claim forms to today
             const today = now.toISOString().split('T')[0];
+            document.getElementById('claimDate').value = today;
+            document.getElementById('adminClaimDate').value = today;
             
-            // Login form submission
-            loginForm.addEventListener('submit', function(e) {
+            // Check for saved token
+            const savedToken = localStorage.getItem('hfa_auth_token');
+            const savedUser = localStorage.getItem('hfa_user');
+            
+            if (savedToken && savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    authToken = savedToken;
+                    
+                    if (currentUser.role === 'worker') {
+                        showWorkerDashboard();
+                    } else if (currentUser.role === 'admin') {
+                        showAdminDashboard();
+                    }
+                } catch (e) {
+                    localStorage.removeItem('hfa_auth_token');
+                    localStorage.removeItem('hfa_user');
+                }
+            }
+            
+            // Login form submission with ROBUST PAYLOAD FIX
+            loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
                 
-                // Find user in users array
-                const user = users.find(u => u.id === username && u.password === password);
+                // Show loading state
+                loginButton.disabled = true;
+                loginButtonText.textContent = 'Logging in...';
+                loginButtonSpinner.classList.remove('hidden');
+                loginError.style.display = 'none';
                 
-                if (user) {
-                    if (user.status === "inactive") {
-                        showToast("Your account is inactive. Please contact administrator.", "error");
-                        return;
-                    }
+                try {
+                    // Send both email and username keys to satisfy backend requirements
+                    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: username,
+                            username: username,
+                            password: password
+                        })
+                    });
                     
-                    currentUser = user;
-                    currentRole = user.role;
+                    const data = await response.json();
                     
-                    if (user.role === "worker") {
-                        loginPage.classList.add('hidden');
-                        workerDashboard.classList.remove('hidden');
+                    if (response.ok) {
+                        // Save token and user data
+                        authToken = data.token;
+                        currentUser = data.user;
                         
-                        // Update worker info in sidebar
-                        document.getElementById('workerUserName').textContent = user.name;
-                        document.getElementById('workerUserId').textContent = `Worker ID: ${user.id}`;
+                        localStorage.setItem('hfa_auth_token', authToken);
+                        localStorage.setItem('hfa_user', JSON.stringify(currentUser));
                         
-                        // Update worker stats and tables
-                        updateWorkerStats();
-                        populateWorkerClaimsTable();
+                        if (currentUser.role === 'worker') {
+                            showWorkerDashboard();
+                        } else if (currentUser.role === 'admin') {
+                            showAdminDashboard();
+                        }
                         
-                        showToast(`Login successful! Welcome ${user.name}.`);
-                    } else if (user.role === "admin") {
-                        loginPage.classList.add('hidden');
-                        adminDashboard.classList.remove('hidden');
-                        
-                        // Update admin stats and tables
-                        updateAdminStats();
-                        populateAdminClaimsTable();
-                        populateAdminUsersTable();
-                        
-                        showToast("Login successful! Welcome Administrator.");
+                        showToast('Login successful!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Login failed');
                     }
-                } else {
-                    showToast("Invalid credentials. Please try again.", "error");
+                } catch (error) {
+                    loginError.style.display = 'block';
+                    loginErrorMessage.textContent = error.message;
+                    showToast(error.message, 'error');
+                } finally {
+                    // Reset loading state
+                    loginButton.disabled = false;
+                    loginButtonText.textContent = 'Log In';
+                    loginButtonSpinner.classList.add('hidden');
                 }
             });
             
-            // Logout buttons
-            workerLogout.addEventListener('click', function(e) {
+            // Worker dashboard events
+            document.getElementById('workerLogout').addEventListener('click', function(e) {
                 e.preventDefault();
-                workerDashboard.classList.add('hidden');
-                loginPage.classList.remove('hidden');
-                loginForm.reset();
-                currentUser = null;
-                currentRole = null;
-                showToast("You have been logged out.");
+                logout();
             });
             
-            adminLogout.addEventListener('click', function(e) {
-                e.preventDefault();
-                adminDashboard.classList.add('hidden');
-                loginPage.classList.remove('hidden');
-                loginForm.reset();
-                currentUser = null;
-                currentRole = null;
-                showToast("You have been logged out.");
+            document.getElementById('newClaimBtnWorker').addEventListener('click', function() {
+                switchWorkerSection('newClaimSection', 'New Claim');
             });
             
-            // New claim buttons
-            newClaimBtn.addEventListener('click', function() {
-                switchSection('newClaimSection', 'New Claim');
+            document.getElementById('cancelNewClaimBtn').addEventListener('click', function() {
+                switchWorkerSection('manageClaimSection', 'Manage Claim Sheet');
             });
             
-            adminNewClaimBtn.addEventListener('click', function() {
-                switchAdminSection('adminNewClaimSection', 'New Claim');
+            document.getElementById('refreshClaimsBtn').addEventListener('click', function() {
+                loadWorkerClaims();
             });
             
-            // Close modal buttons
-            closeViewModalBtn.addEventListener('click', function() {
-                viewClaimModal.style.display = 'none';
-            });
-            
-            // Filter status for admin
-            filterStatus.addEventListener('change', function() {
-                populateAdminClaimsTable();
+            document.getElementById('refreshMyClaimsBtn').addEventListener('click', function() {
+                loadWorkerClaims();
             });
             
             // Worker menu navigation
@@ -1207,8 +1313,40 @@
                     this.classList.add('active');
                     
                     const section = this.getAttribute('data-section');
-                    switchSection(section + 'Section', this.querySelector('span').textContent);
+                    switchWorkerSection(section + 'Section', this.querySelector('span').textContent);
                 });
+            });
+            
+            // Worker new claim form
+            document.getElementById('newClaimForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await submitNewClaim('worker');
+            });
+            
+            document.getElementById('resetClaimForm').addEventListener('click', function() {
+                document.getElementById('newClaimForm').reset();
+                document.getElementById('claimDate').value = today;
+                document.getElementById('claimFormError').style.display = 'none';
+            });
+            
+            // Admin dashboard events
+            document.getElementById('adminLogout').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+            
+            document.getElementById('cancelAdminNewClaimBtn').addEventListener('click', function() {
+                switchAdminSection('adminManageClaimSection', 'Manage Claims');
+            });
+            
+            document.getElementById('refreshAdminClaimsBtn').addEventListener('click', function() {
+                loadAdminClaims();
+            });
+            
+            document.getElementById('resetAdminClaimForm').addEventListener('click', function() {
+                document.getElementById('adminNewClaimForm').reset();
+                document.getElementById('adminClaimDate').value = today;
+                document.getElementById('adminClaimFormError').style.display = 'none';
             });
             
             // Admin menu navigation
@@ -1225,121 +1363,85 @@
                 });
             });
             
-            // Add user button
-            addUserBtn.addEventListener('click', function() {
-                addUserModal.style.display = 'flex';
-                addUserForm.reset();
-            });
-            
-            // Close add user modal
-            closeAddUserModalBtn.addEventListener('click', function() {
-                addUserModal.style.display = 'none';
-            });
-            
-            cancelAddUserBtn.addEventListener('click', function() {
-                addUserModal.style.display = 'none';
-            });
-            
-            // Add user form submission
-            addUserForm.addEventListener('submit', function(e) {
+            // Admin new claim form
+            document.getElementById('adminNewClaimForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
-                const fullName = document.getElementById('userFullName').value;
-                const department = document.getElementById('userDepartment').value;
-                const email = document.getElementById('userEmail').value;
-                const phone = document.getElementById('userPhone').value;
-                const password = document.getElementById('userPassword').value;
-                const status = document.getElementById('userStatus').value;
-                
-                // Generate user ID
-                const workerIds = users
-                    .filter(u => u.role === "worker")
-                    .map(u => parseInt(u.id.split('-').pop()))
-                    .filter(id => !isNaN(id));
-                
-                const maxId = workerIds.length > 0 ? Math.max(...workerIds) : 1000;
-                const newUserId = `HFA-W-${maxId + 1}`;
-                
-                // Create new user
-                const newUser = {
-                    id: newUserId,
-                    password: password,
-                    name: fullName,
-                    role: "worker",
-                    department: department,
-                    email: email,
-                    phone: phone,
-                    status: status
-                };
-                
-                // Add to users array
-                users.push(newUser);
-                
-                // Update users table
-                populateAdminUsersTable();
-                
-                // Close modal and show success message
-                addUserModal.style.display = 'none';
-                showToast(`User account created successfully! User ID: ${newUserId}`);
+                await submitNewClaim('admin');
             });
             
-            // Recommendation modal
-            closeRecommendationModalBtn.addEventListener('click', function() {
-                recommendationModal.style.display = 'none';
+            // User management
+            document.getElementById('createUserBtn').addEventListener('click', function() {
+                document.getElementById('createUserModal').style.display = 'flex';
+                document.getElementById('createUserForm').reset();
             });
             
-            cancelRecommendationBtn.addEventListener('click', function() {
-                recommendationModal.style.display = 'none';
+            document.getElementById('closeCreateUserModal').addEventListener('click', function() {
+                document.getElementById('createUserModal').style.display = 'none';
             });
             
-            submitRecommendationBtn.addEventListener('click', function() {
-                const recommendationText = document.getElementById('recommendationText').value;
-                if (recommendationText.trim() === '') {
-                    showToast("Please enter a recommendation", "error");
-                    return;
-                }
-                
-                // Update claim status to recommendation
-                if (currentClaimIdForRecommendation) {
-                    const claim = claims.find(c => c.id === currentClaimIdForRecommendation);
-                    if (claim) {
-                        claim.status = 'recommendation';
-                        claim.recommendation = recommendationText;
-                        
-                        updateAdminStats();
-                        populateAdminClaimsTable();
-                        
-                        // If the claim belongs to a worker, update their view too
-                        if (currentUser && currentUser.role === "worker") {
-                            updateWorkerStats();
-                            populateWorkerClaimsTable();
-                        }
-                        
-                        showToast(`Recommendation added to claim ${currentClaimIdForRecommendation}`);
-                    }
-                }
-                
-                recommendationModal.style.display = 'none';
-                document.getElementById('recommendationText').value = '';
-                currentClaimIdForRecommendation = null;
+            document.getElementById('cancelCreateUser').addEventListener('click', function() {
+                document.getElementById('createUserModal').style.display = 'none';
+            });
+            
+            document.getElementById('createUserForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await createUser();
+            });
+            
+            // Filter status for admin
+            document.getElementById('filterStatus').addEventListener('change', function() {
+                loadAdminClaims();
+            });
+            
+            // User search
+            document.getElementById('userSearch').addEventListener('input', function() {
+                filterUsers(this.value);
             });
             
             // Close modals when clicking outside
             window.addEventListener('click', function(e) {
-                if (e.target === viewClaimModal) {
-                    viewClaimModal.style.display = 'none';
+                if (e.target === document.getElementById('viewClaimModal')) {
+                    document.getElementById('viewClaimModal').style.display = 'none';
                 }
-                if (e.target === recommendationModal) {
-                    recommendationModal.style.display = 'none';
+                if (e.target === document.getElementById('createUserModal')) {
+                    document.getElementById('createUserModal').style.display = 'none';
                 }
-                if (e.target === addUserModal) {
-                    addUserModal.style.display = 'none';
-                }
+            });
+            
+            // Close view claim modal
+            document.getElementById('closeViewModal').addEventListener('click', function() {
+                document.getElementById('viewClaimModal').style.display = 'none';
             });
         });
         
+        // Function to show worker dashboard
+        function showWorkerDashboard() {
+            loginPage.classList.add('hidden');
+            workerDashboard.classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('workerUserName').textContent = currentUser.name || currentUser.email;
+            document.getElementById('workerUserId').textContent = `Worker ID: ${currentUser.id || 'N/A'}`;
+            
+            // Load claims
+            loadWorkerClaims();
+        }
+        
+        // Function to show admin dashboard
+        function showAdminDashboard() {
+            loginPage.classList.add('hidden');
+            adminDashboard.classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('adminUserName').textContent = currentUser.name || currentUser.email;
+            
+            // Load claims and users
+            loadAdminClaims();
+            loadUsers();
+        }
+        
         // Function to switch worker sections
-        function switchSection(sectionId, pageTitle) {
+        function switchWorkerSection(sectionId, pageTitle) {
             // Hide all sections
             document.querySelectorAll('#workerDashboard .section').forEach(section => {
                 section.classList.remove('active');
@@ -1353,6 +1455,11 @@
             
             // Update page title
             document.getElementById('workerPageTitle').textContent = pageTitle;
+            
+            // Load data if needed
+            if (sectionId === 'myClaimsSection') {
+                loadWorkerClaims();
+            }
         }
         
         // Function to switch admin sections
@@ -1372,126 +1479,189 @@
             document.getElementById('adminPageTitle').textContent = pageTitle;
         }
         
-        // Function to populate worker claims table
-        function populateWorkerClaimsTable() {
-            if (!currentUser) return;
+        // Function to load worker claims
+        async function loadWorkerClaims() {
+            if (!currentUser || !authToken) return;
             
-            const table = document.getElementById('workerClaimsTable');
-            table.innerHTML = '';
+            const tableBody = document.getElementById('workerClaimsTableBody');
+            const myClaimsTableBody = document.getElementById('myClaimsTableBody');
+            const loadingElement = document.getElementById('workerClaimsLoading');
+            const emptyElement = document.getElementById('workerClaimsEmpty');
+            const tableElement = document.getElementById('workerClaimsTable');
             
-            // Get claims for current user only
-            const userClaims = claims.filter(claim => claim.userId === currentUser.id);
+            const myClaimsLoadingElement = document.getElementById('myClaimsLoading');
+            const myClaimsEmptyElement = document.getElementById('myClaimsEmpty');
+            const myClaimsTableElement = document.getElementById('myClaimsTable');
             
-            if (userClaims.length === 0) {
-                table.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i><p>No claims found</p></td></tr>`;
-                return;
+            // Show loading state
+            loadingElement.style.display = 'block';
+            emptyElement.style.display = 'none';
+            tableElement.style.display = 'none';
+            
+            myClaimsLoadingElement.style.display = 'block';
+            myClaimsEmptyElement.style.display = 'none';
+            myClaimsTableElement.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/claim/my-claim`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.status === 401) {
+                    logout();
+                    throw new Error('Session expired. Please login again.');
+                }
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Clear tables
+                    tableBody.innerHTML = '';
+                    myClaimsTableBody.innerHTML = '';
+                    
+                    if (data.claims && data.claims.length > 0) {
+                        // Update stats
+                        updateWorkerStats(data.claims);
+                        
+                        // Populate tables
+                        data.claims.forEach(claim => {
+                            const row = createClaimRow(claim, false);
+                            tableBody.appendChild(row.cloneNode(true));
+                            myClaimsTableBody.appendChild(row);
+                        });
+                        
+                        // Show tables
+                        loadingElement.style.display = 'none';
+                        tableElement.style.display = 'table';
+                        
+                        myClaimsLoadingElement.style.display = 'none';
+                        myClaimsTableElement.style.display = 'table';
+                    } else {
+                        // Show empty state
+                        loadingElement.style.display = 'none';
+                        emptyElement.style.display = 'block';
+                        
+                        myClaimsLoadingElement.style.display = 'none';
+                        myClaimsEmptyElement.style.display = 'block';
+                        
+                        // Reset stats
+                        resetWorkerStats();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to load claims');
+                }
+            } catch (error) {
+                showToast(error.message, 'error');
+                
+                // Show empty state
+                loadingElement.style.display = 'none';
+                emptyElement.style.display = 'block';
+                
+                myClaimsLoadingElement.style.display = 'none';
+                myClaimsEmptyElement.style.display = 'block';
+                
+                resetWorkerStats();
             }
-            
-            userClaims.forEach(claim => {
-                const row = createClaimRow(claim, false);
-                table.appendChild(row);
-            });
         }
         
-        // Function to populate admin claims table
-        function populateAdminClaimsTable() {
-            const table = document.getElementById('adminClaimsTable');
-            table.innerHTML = '';
+        // Function to load admin claims
+        async function loadAdminClaims() {
+            if (!currentUser || !authToken) return;
             
-            const statusFilter = filterStatus.value;
-            let filteredClaims = claims;
+            const tableBody = document.getElementById('adminClaimsTableBody');
+            const loadingElement = document.getElementById('adminClaimsLoading');
+            const emptyElement = document.getElementById('adminClaimsEmpty');
+            const tableElement = document.getElementById('adminClaimsTable');
+            const filterStatus = document.getElementById('filterStatus').value;
             
-            if (statusFilter !== 'all') {
-                filteredClaims = claims.filter(claim => claim.status === statusFilter);
+            // Show loading state
+            loadingElement.style.display = 'block';
+            emptyElement.style.display = 'none';
+            tableElement.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/claim/all`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.status === 401) {
+                    logout();
+                    throw new Error('Session expired. Please login again.');
+                }
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Clear table
+                    tableBody.innerHTML = '';
+                    
+                    if (data.claims && data.claims.length > 0) {
+                        // Filter claims
+                        let filteredClaims = data.claims;
+                        if (filterStatus !== 'all') {
+                            filteredClaims = data.claims.filter(claim => claim.status === filterStatus);
+                        }
+                        
+                        // Update stats
+                        updateAdminStats(data.claims);
+                        
+                        if (filteredClaims.length > 0) {
+                            // Populate table
+                            filteredClaims.forEach(claim => {
+                                const row = createClaimRow(claim, true);
+                                tableBody.appendChild(row);
+                            });
+                            
+                            // Show table
+                            loadingElement.style.display = 'none';
+                            tableElement.style.display = 'table';
+                        } else {
+                            // Show empty state
+                            loadingElement.style.display = 'none';
+                            emptyElement.style.display = 'block';
+                        }
+                    } else {
+                        // Show empty state
+                        loadingElement.style.display = 'none';
+                        emptyElement.style.display = 'block';
+                        resetAdminStats();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to load claims');
+                }
+            } catch (error) {
+                showToast(error.message, 'error');
+                
+                // Show empty state
+                loadingElement.style.display = 'none';
+                emptyElement.style.display = 'block';
+                resetAdminStats();
             }
-            
-            if (filteredClaims.length === 0) {
-                table.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><p>No claims found</p></td></tr>`;
-                return;
-            }
-            
-            filteredClaims.forEach(claim => {
-                const row = createClaimRow(claim, true);
-                table.appendChild(row);
-            });
         }
         
-        // Function to populate admin users table
-        function populateAdminUsersTable() {
-            const table = document.getElementById('adminUsersTable');
-            table.innerHTML = '';
+        // Function to load users
+        async function loadUsers() {
+            // Note: The API doesn't have a users endpoint
+            // In a real implementation, you would fetch users from the backend
+            // For now, we'll show a message
+            const tableBody = document.getElementById('usersTableBody');
+            const loadingElement = document.getElementById('usersLoading');
+            const emptyElement = document.getElementById('usersEmpty');
+            const tableElement = document.getElementById('usersTable');
             
-            // Get only worker users (not admin)
-            const workerUsers = users.filter(user => user.role === "worker");
+            loadingElement.style.display = 'none';
+            emptyElement.style.display = 'block';
+            tableElement.style.display = 'none';
             
-            if (workerUsers.length === 0) {
-                table.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-users"></i><p>No users found</p></td></tr>`;
-                return;
-            }
-            
-            workerUsers.forEach(user => {
-                const row = document.createElement('tr');
-                
-                // Status badge
-                let statusBadge = user.status === "active" 
-                    ? '<span class="status-badge status-approved">Active</span>' 
-                    : '<span class="status-badge status-rejected">Inactive</span>';
-                
-                row.innerHTML = `
-                    <td><span class="user-badge">${user.id}</span></td>
-                    <td>${user.name}</td>
-                    <td>${user.department}</td>
-                    <td>${user.email}</td>
-                    <td>${user.phone || 'N/A'}</td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        <button class="btn-primary btn-small view-user-btn" data-id="${user.id}">View</button>
-                        <button class="btn-warning btn-small edit-user-btn" data-id="${user.id}">Edit</button>
-                        <button class="btn-danger btn-small delete-user-btn" data-id="${user.id}">Delete</button>
-                        ${user.status === "active" 
-                            ? `<button class="btn-secondary btn-small deactivate-user-btn" data-id="${user.id}">Deactivate</button>` 
-                            : `<button class="btn-success btn-small activate-user-btn" data-id="${user.id}">Activate</button>`}
-                    </td>
-                `;
-                
-                table.appendChild(row);
-            });
-            
-            // Add event listeners to user buttons
-            document.querySelectorAll('.view-user-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
-                    viewUserDetails(userId);
-                });
-            });
-            
-            document.querySelectorAll('.edit-user-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
-                    editUser(userId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-user-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
-                    deleteUser(userId);
-                });
-            });
-            
-            document.querySelectorAll('.deactivate-user-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
-                    deactivateUser(userId);
-                });
-            });
-            
-            document.querySelectorAll('.activate-user-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-id');
-                    activateUser(userId);
-                });
-            });
+            // showToast('User management requires backend implementation', 'info');
         }
         
         // Function to create a claim row
@@ -1502,40 +1672,31 @@
             let statusBadge = getStatusBadge(claim.status);
             
             // Format date
-            const dateObj = new Date(claim.date);
+            const dateObj = new Date(claim.createdAt || claim.date);
             const formattedDate = dateObj.toLocaleDateString('en-GB');
             
-            // Get user name for admin view
-            let userName = "";
-            if (isAdmin) {
-                const user = users.find(u => u.id === claim.userId);
-                userName = user ? user.name : claim.userId;
+            // Get user info for admin view
+            let userInfo = '';
+            if (isAdmin && claim.user) {
+                userInfo = `${claim.user.name || claim.user.email} <span class="user-badge">${claim.user.id || 'N/A'}</span>`;
             }
             
             row.innerHTML = `
-                <td>${claim.id}</td>
-                ${isAdmin ? `<td>${userName} <span class="user-badge">${claim.userId}</span></td>` : ''}
+                <td>${claim.id || claim._id || 'N/A'}</td>
+                ${isAdmin ? `<td>${userInfo}</td>` : ''}
                 <td>${formattedDate}</td>
-                <td>${claim.description}</td>
-                <td>${claim.category}</td>
-                <td>${claim.amount}</td>
+                <td>${claim.description || 'No description'}</td>
+                <td>${claim.category || 'Uncategorized'}</td>
+                <td>£${parseFloat(claim.amount || 0).toFixed(2)}</td>
                 <td>${statusBadge}</td>
                 <td>
-                    <button class="btn-primary btn-small view-claim-btn" data-id="${claim.id}" data-admin="${isAdmin}">View</button>
-                    ${!isAdmin && (claim.status === 'new' || claim.status === 'pending') ? `
-                        <button class="btn-warning btn-small edit-claim-btn" data-id="${claim.id}">Edit</button>
-                        <button class="btn-danger btn-small delete-claim-btn" data-id="${claim.id}">Delete</button>
+                    <button class="btn-primary btn-small view-claim-btn" data-id="${claim._id || claim.id}" data-admin="${isAdmin}">View</button>
+                    ${!isAdmin && (claim.status === 'pending' || claim.status === 'new') ? `
+                        <button class="btn-danger btn-small delete-claim-btn" data-id="${claim._id || claim.id}">Delete</button>
                     ` : ''}
-                    ${isAdmin && (claim.status === 'new' || claim.status === 'pending') ? `
-                        <button class="btn-success btn-small approve-claim-btn" data-id="${claim.id}">Approve</button>
-                        <button class="btn-danger btn-small reject-claim-btn" data-id="${claim.id}">Reject</button>
-                        <button class="btn-warning btn-small recommend-claim-btn" data-id="${claim.id}">Recommend</button>
-                    ` : ''}
-                    ${isAdmin && claim.status === 'approved' ? `
-                        <button class="btn-success btn-small mark-paid-btn" data-id="${claim.id}">Mark Paid</button>
-                    ` : ''}
-                    ${isAdmin && claim.status === 'recommendation' ? `
-                        <button class="btn-success btn-small approve-recommendation-btn" data-id="${claim.id}">Approve</button>
+                    ${isAdmin && claim.status === 'pending' ? `
+                        <button class="btn-success btn-small approve-claim-btn" data-id="${claim._id || claim.id}">Approve</button>
+                        <button class="btn-danger btn-small reject-claim-btn" data-id="${claim._id || claim.id}">Reject</button>
                     ` : ''}
                 </td>
             `;
@@ -1547,91 +1708,313 @@
         function getStatusBadge(status) {
             switch(status) {
                 case 'new':
-                    return '<span class="status-badge status-new">New</span>';
                 case 'pending':
                     return '<span class="status-badge status-pending">Pending</span>';
-                case 'verified':
-                    return '<span class="status-badge status-verified">Verified</span>';
                 case 'approved':
                     return '<span class="status-badge status-approved">Approved</span>';
                 case 'rejected':
                     return '<span class="status-badge status-rejected">Rejected</span>';
                 case 'paid':
                     return '<span class="status-badge status-paid">Paid</span>';
-                case 'recommendation':
-                    return '<span class="status-badge status-recommendation">Recommendation</span>';
                 default:
-                    return `<span class="status-badge">${status}</span>`;
+                    return `<span class="status-badge">${status || 'Unknown'}</span>`;
+            }
+        }
+        
+        // Function to submit a new claim
+        async function submitNewClaim(role) {
+            if (!currentUser || !authToken) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            let claimDate, claimCategory, claimDescription, claimAmount, claimNotes, claimReceipt;
+            let submitBtn, submitBtnText, submitBtnSpinner, formError, formErrorMessage;
+            
+            if (role === 'worker') {
+                claimDate = document.getElementById('claimDate').value;
+                claimCategory = document.getElementById('claimCategory').value;
+                claimDescription = document.getElementById('claimDescription').value;
+                claimAmount = document.getElementById('claimAmount').value;
+                claimNotes = document.getElementById('claimNotes').value;
+                claimReceipt = document.getElementById('claimReceipt').value;
+                submitBtn = document.getElementById('submitClaimBtn');
+                submitBtnText = document.getElementById('submitClaimBtnText');
+                submitBtnSpinner = document.getElementById('submitClaimBtnSpinner');
+                formError = document.getElementById('claimFormError');
+                formErrorMessage = document.getElementById('claimFormErrorMessage');
+            } else {
+                claimDate = document.getElementById('adminClaimDate').value;
+                claimCategory = document.getElementById('adminClaimCategory').value;
+                claimDescription = document.getElementById('adminClaimDescription').value;
+                claimAmount = document.getElementById('adminClaimAmount').value;
+                claimReceipt = document.getElementById('adminClaimReceipt').value;
+                claimNotes = '';
+                submitBtn = document.getElementById('submitAdminClaimBtn');
+                submitBtnText = document.getElementById('submitAdminClaimBtnText');
+                submitBtnSpinner = document.getElementById('submitAdminClaimBtnSpinner');
+                formError = document.getElementById('adminClaimFormError');
+                formErrorMessage = document.getElementById('adminClaimFormErrorMessage');
+            }
+            
+            // Validate
+            if (!claimDate || !claimCategory || !claimDescription || !claimAmount) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = 'Please fill in all required fields';
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtnText.textContent = 'Submitting...';
+            submitBtnSpinner.classList.remove('hidden');
+            formError.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/claim/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date: claimDate,
+                        category: claimCategory,
+                        description: claimDescription,
+                        amount: parseFloat(claimAmount),
+                        receipt: claimReceipt === 'yes',
+                        notes: claimNotes
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('Claim submitted successfully!', 'success');
+                    
+                    // Reset form
+                    if (role === 'worker') {
+                        document.getElementById('newClaimForm').reset();
+                        document.getElementById('claimDate').value = new Date().toISOString().split('T')[0];
+                        switchWorkerSection('manageClaimSection', 'Manage Claim Sheet');
+                    } else {
+                        document.getElementById('adminNewClaimForm').reset();
+                        document.getElementById('adminClaimDate').value = new Date().toISOString().split('T')[0];
+                        switchAdminSection('adminManageClaimSection', 'Manage Claims');
+                    }
+                    
+                    // Refresh claims
+                    if (role === 'worker') {
+                        loadWorkerClaims();
+                    } else {
+                        loadAdminClaims();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to submit claim');
+                }
+            } catch (error) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = error.message;
+                showToast(error.message, 'error');
+            } finally {
+                // Reset loading state
+                submitBtn.disabled = false;
+                submitBtnText.textContent = 'Submit Claim';
+                submitBtnSpinner.classList.add('hidden');
+            }
+        }
+        
+        // Function to create a new user
+        async function createUser() {
+            if (!currentUser || !authToken) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            const userName = document.getElementById('createUserName').value;
+            const userEmail = document.getElementById('createUserEmail').value;
+            const userPassword = document.getElementById('createUserPassword').value;
+            const userRole = document.getElementById('createUserRole').value;
+            const userDepartment = document.getElementById('createUserDepartment').value;
+            const submitBtn = document.getElementById('submitCreateUserBtn');
+            const submitBtnText = document.getElementById('submitCreateUserBtnText');
+            const submitBtnSpinner = document.getElementById('submitCreateUserBtnSpinner');
+            const formError = document.getElementById('createUserFormError');
+            const formErrorMessage = document.getElementById('createUserFormErrorMessage');
+            
+            // Validate
+            if (!userName || !userEmail || !userPassword || !userRole) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = 'Please fill in all required fields';
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtnText.textContent = 'Creating...';
+            submitBtnSpinner.classList.remove('hidden');
+            formError.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: userName,
+                        email: userEmail,
+                        password: userPassword,
+                        role: userRole,
+                        department: userDepartment || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('User created successfully!', 'success');
+                    
+                    // Close modal and reset form
+                    document.getElementById('createUserModal').style.display = 'none';
+                    document.getElementById('createUserForm').reset();
+                    
+                    // Refresh users list
+                    loadUsers();
+                } else {
+                    throw new Error(data.message || 'Failed to create user');
+                }
+            } catch (error) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = error.message;
+                showToast(error.message, 'error');
+            } finally {
+                // Reset loading state
+                submitBtn.disabled = false;
+                submitBtnText.textContent = 'Create User';
+                submitBtnSpinner.classList.add('hidden');
+            }
+        }
+        
+        // Function to update worker stats
+        function updateWorkerStats(claims) {
+            const total = claims.length;
+            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
+            const approved = claims.filter(c => c.status === 'approved').length;
+            const rejected = claims.filter(c => c.status === 'rejected').length;
+            
+            document.getElementById('workerTotalClaims').textContent = total;
+            document.getElementById('workerPendingClaims').textContent = pending;
+            document.getElementById('workerApprovedClaims').textContent = approved;
+            document.getElementById('workerRejectedClaims').textContent = rejected;
+        }
+        
+        // Function to reset worker stats
+        function resetWorkerStats() {
+            document.getElementById('workerTotalClaims').textContent = '0';
+            document.getElementById('workerPendingClaims').textContent = '0';
+            document.getElementById('workerApprovedClaims').textContent = '0';
+            document.getElementById('workerRejectedClaims').textContent = '0';
+        }
+        
+        // Function to update admin stats
+        function updateAdminStats(claims) {
+            const total = claims.length;
+            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
+            const approved = claims.filter(c => c.status === 'approved').length;
+            const rejected = claims.filter(c => c.status === 'rejected').length;
+            
+            document.getElementById('adminTotalClaims').textContent = total;
+            document.getElementById('adminPendingClaims').textContent = pending;
+            document.getElementById('adminApprovedClaims').textContent = approved;
+            document.getElementById('adminRejectedClaims').textContent = rejected;
+        }
+        
+        // Function to reset admin stats
+        function resetAdminStats() {
+            document.getElementById('adminTotalClaims').textContent = '0';
+            document.getElementById('adminPendingClaims').textContent = '0';
+            document.getElementById('adminApprovedClaims').textContent = '0';
+            document.getElementById('adminRejectedClaims').textContent = '0';
+        }
+        
+        // Function to filter users
+        function filterUsers(searchTerm) {
+            const tableBody = document.getElementById('usersTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm.toLowerCase())) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             }
         }
         
         // Function to handle button clicks in tables
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', async function(e) {
             // View claim button
             if (e.target.classList.contains('view-claim-btn')) {
                 const claimId = e.target.getAttribute('data-id');
                 const isAdmin = e.target.getAttribute('data-admin') === 'true';
-                viewClaimDetails(claimId, isAdmin);
-            }
-            
-            // Edit claim button (worker only)
-            if (e.target.classList.contains('edit-claim-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                editClaim(claimId);
+                await viewClaimDetails(claimId, isAdmin);
             }
             
             // Delete claim button (worker only)
             if (e.target.classList.contains('delete-claim-btn')) {
                 const claimId = e.target.getAttribute('data-id');
-                deleteClaim(claimId);
+                await deleteClaim(claimId);
             }
             
             // Approve claim button (admin only)
             if (e.target.classList.contains('approve-claim-btn')) {
                 const claimId = e.target.getAttribute('data-id');
-                approveClaim(claimId);
+                await updateClaimStatus(claimId, 'approved');
             }
             
             // Reject claim button (admin only)
             if (e.target.classList.contains('reject-claim-btn')) {
                 const claimId = e.target.getAttribute('data-id');
-                rejectClaim(claimId);
-            }
-            
-            // Mark paid button (admin only)
-            if (e.target.classList.contains('mark-paid-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                markClaimAsPaid(claimId);
-            }
-            
-            // Recommend claim button (admin only)
-            if (e.target.classList.contains('recommend-claim-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                showRecommendationModal(claimId);
-            }
-            
-            // Approve recommendation button (admin only)
-            if (e.target.classList.contains('approve-recommendation-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                approveClaim(claimId);
+                await updateClaimStatus(claimId, 'rejected');
             }
         });
         
         // Function to view claim details
-        function viewClaimDetails(claimId, isAdmin = false) {
-            // Find the claim
-            const claim = claims.find(c => c.id === claimId);
-            
-            if (!claim) {
-                showToast("Claim not found", "error");
-                return;
+        async function viewClaimDetails(claimId, isAdmin = false) {
+            try {
+                // We use the existing loaded data if possible, or fetch it
+                // Since we don't store claims globally, we'll fetch all again
+                const response = await fetch(`${API_BASE_URL}/claim/all`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const claim = data.claims.find(c => c._id === claimId || c.id === claimId);
+                    
+                    if (claim) {
+                        displayClaimModal(claim, isAdmin);
+                    } else {
+                        showToast('Claim not found', 'error');
+                    }
+                } else {
+                    throw new Error('Failed to load claim details');
+                }
+            } catch (error) {
+                showToast(error.message, 'error');
             }
-            
-            // Find the user who submitted the claim
-            const user = users.find(u => u.id === claim.userId);
-            
+        }
+        
+        // Function to display claim modal
+        function displayClaimModal(claim, isAdmin = false) {
             // Format date
-            const dateObj = new Date(claim.date);
+            const dateObj = new Date(claim.createdAt || claim.date);
             const formattedDate = dateObj.toLocaleDateString('en-GB');
             
             // Status display
@@ -1640,23 +2023,22 @@
             // Create details HTML
             let detailsHTML = `
                 <div style="margin-bottom: 20px;">
-                    <p><strong>Claim ID:</strong> ${claim.id}</p>
-                    <p><strong>Submitted By:</strong> ${user ? user.name : claim.userId} <span class="user-badge">${claim.userId}</span></p>
-                    ${user ? `<p><strong>Department:</strong> ${user.department}</p>` : ''}
+                    <p><strong>Claim ID:</strong> ${claim._id || claim.id}</p>
+                    ${claim.user ? `<p><strong>Submitted By:</strong> ${claim.user.name || claim.user.email}</p>` : ''}
                     <p><strong>Date Submitted:</strong> ${formattedDate}</p>
                     <p><strong>Status:</strong> ${statusBadge}</p>
                 </div>
                 
                 <div style="margin-bottom: 20px;">
-                    <p><strong>Category:</strong> ${claim.category}</p>
-                    <p><strong>Amount:</strong> ${claim.amount}</p>
-                    <p><strong>Receipt Available:</strong> ${claim.receipt === 'yes' ? 'Yes' : 'No'}</p>
+                    <p><strong>Category:</strong> ${claim.category || 'Uncategorized'}</p>
+                    <p><strong>Amount:</strong> £${parseFloat(claim.amount || 0).toFixed(2)}</p>
+                    <p><strong>Receipt Available:</strong> ${claim.receipt ? 'Yes' : 'No'}</p>
                 </div>
                 
                 <div style="margin-bottom: 20px;">
                     <p><strong>Description:</strong></p>
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius); margin-bottom: 10px;">
-                        ${claim.description}
+                        ${claim.description || 'No description'}
                     </div>
                 </div>
             `;
@@ -1673,314 +2055,51 @@
                 `;
             }
             
-            // Add recommendation if available
-            if (claim.recommendation) {
-                detailsHTML += `
-                    <div style="margin-bottom: 20px;">
-                        <p><strong>Recommendation / Additional Information Required:</strong></p>
-                        <div style="background-color: #fff3e0; padding: 15px; border-radius: var(--border-radius);">
-                            ${claim.recommendation}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Add payment date if available
-            if (claim.paymentDate) {
-                const paymentDateObj = new Date(claim.paymentDate);
-                const formattedPaymentDate = paymentDateObj.toLocaleDateString('en-GB');
-                detailsHTML += `
-                    <div style="margin-bottom: 20px;">
-                        <p><strong>Payment Date:</strong> ${formattedPaymentDate}</p>
-                    </div>
-                `;
-            }
-            
-            // Admin actions
-            if (isAdmin && currentRole === "admin") {
-                detailsHTML += `
-                    <div class="form-actions" style="margin-top: 20px;">
-                        ${claim.status === 'new' || claim.status === 'pending' || claim.status === 'recommendation' ? `
-                            <button class="btn-success" id="modalApproveClaimBtn">Approve</button>
-                        ` : ''}
-                        ${claim.status === 'new' || claim.status === 'pending' ? `
-                            <button class="btn-danger" id="modalRejectClaimBtn">Reject</button>
-                            <button class="btn-warning" id="modalRecommendClaimBtn">Add Recommendation</button>
-                        ` : ''}
-                        ${claim.status === 'approved' ? `
-                            <button class="btn-success" id="modalMarkPaidBtn">Mark as Paid</button>
-                        ` : ''}
-                    </div>
-                `;
-            }
-            
             // Set modal content
             document.getElementById('claimDetails').innerHTML = detailsHTML;
-            document.getElementById('modalClaimTitle').textContent = `Claim Details: ${claim.id}`;
-            
-            // Add event listeners for modal buttons
-            if (isAdmin && currentRole === "admin") {
-                if (document.getElementById('modalApproveClaimBtn')) {
-                    document.getElementById('modalApproveClaimBtn').addEventListener('click', function() {
-                        approveClaim(claimId);
-                        viewClaimModal.style.display = 'none';
-                    });
-                }
-                
-                if (document.getElementById('modalRejectClaimBtn')) {
-                    document.getElementById('modalRejectClaimBtn').addEventListener('click', function() {
-                        rejectClaim(claimId);
-                        viewClaimModal.style.display = 'none';
-                    });
-                }
-                
-                if (document.getElementById('modalRecommendClaimBtn')) {
-                    document.getElementById('modalRecommendClaimBtn').addEventListener('click', function() {
-                        viewClaimModal.style.display = 'none';
-                        showRecommendationModal(claimId);
-                    });
-                }
-                
-                if (document.getElementById('modalMarkPaidBtn')) {
-                    document.getElementById('modalMarkPaidBtn').addEventListener('click', function() {
-                        markClaimAsPaid(claimId);
-                        viewClaimModal.style.display = 'none';
-                    });
-                }
-            }
+            document.getElementById('modalClaimTitle').textContent = `Claim Details: ${claim._id || claim.id}`;
             
             // Show modal
-            viewClaimModal.style.display = 'flex';
+            document.getElementById('viewClaimModal').style.display = 'flex';
         }
         
-        // Function to edit a claim (worker only)
-        function editClaim(claimId) {
-            const claim = claims.find(c => c.id === claimId);
-            if (!claim) return;
+        // Function to delete a claim
+        async function deleteClaim(claimId) {
+            if (!confirm('Are you sure you want to delete this claim?')) return;
             
-            // Check if current user owns this claim
-            if (currentUser && claim.userId === currentUser.id) {
-                showToast("Edit functionality would open a form in a real application", "info");
-            } else {
-                showToast("You can only edit your own claims", "error");
-            }
-        }
-        
-        // Function to delete a claim (worker only)
-        function deleteClaim(claimId) {
-            const claim = claims.find(c => c.id === claimId);
-            if (!claim) return;
-            
-            // Check if current user owns this claim
-            if (currentUser && claim.userId !== currentUser.id) {
-                showToast("You can only delete your own claims", "error");
-                return;
-            }
-            
-            if (!confirm(`Are you sure you want to delete claim ${claimId}?`)) return;
-            
-            // Remove from claims
-            const claimIndex = claims.findIndex(c => c.id === claimId);
-            if (claimIndex !== -1) {
-                claims.splice(claimIndex, 1);
-            }
-            
-            // Update tables and stats
-            if (currentRole === "worker") {
-                updateWorkerStats();
-                populateWorkerClaimsTable();
-            } else if (currentRole === "admin") {
-                updateAdminStats();
-                populateAdminClaimsTable();
-            }
-            
-            showToast(`Claim ${claimId} deleted successfully`);
-        }
-        
-        // Function to approve a claim (admin only)
-        function approveClaim(claimId) {
-            const claim = claims.find(c => c.id === claimId);
-            if (!claim) return;
-            
-            claim.status = 'approved';
-            
-            // Update stats and tables
-            updateAdminStats();
-            populateAdminClaimsTable();
-            
-            showToast(`Claim ${claimId} approved successfully`);
-        }
-        
-        // Function to reject a claim (admin only)
-        function rejectClaim(claimId) {
-            const claim = claims.find(c => c.id === claimId);
-            if (!claim) return;
-            
-            claim.status = 'rejected';
-            
-            // Update stats and tables
-            updateAdminStats();
-            populateAdminClaimsTable();
-            
-            showToast(`Claim ${claimId} rejected`);
-        }
-        
-        // Function to mark claim as paid (admin only)
-        function markClaimAsPaid(claimId) {
-            const claim = claims.find(c => c.id === claimId);
-            if (!claim) return;
-            
-            claim.status = 'paid';
-            claim.paymentDate = new Date().toISOString().split('T')[0];
-            
-            // Update stats and tables
-            updateAdminStats();
-            populateAdminClaimsTable();
-            
-            showToast(`Claim ${claimId} marked as paid`);
-        }
-        
-        // Function to show recommendation modal
-        function showRecommendationModal(claimId) {
-            currentClaimIdForRecommendation = claimId;
-            document.getElementById('recommendationText').value = '';
-            recommendationModal.style.display = 'flex';
-        }
-        
-        // Function to view user details
-        function viewUserDetails(userId) {
-            const user = users.find(u => u.id === userId);
-            if (!user) return;
-            
-            // Get user's claims
-            const userClaims = claims.filter(claim => claim.userId === userId);
-            
-            let detailsHTML = `
-                <div style="margin-bottom: 20px;">
-                    <p><strong>User ID:</strong> <span class="user-badge">${user.id}</span></p>
-                    <p><strong>Full Name:</strong> ${user.name}</p>
-                    <p><strong>Department:</strong> ${user.department}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Phone:</strong> ${user.phone || 'N/A'}</p>
-                    <p><strong>Status:</strong> ${user.status === "active" ? '<span class="status-badge status-approved">Active</span>' : '<span class="status-badge status-rejected">Inactive</span>'}</p>
-                    <p><strong>Role:</strong> ${user.role === "admin" ? "Administrator" : "Worker"}</p>
-                </div>
+            try {
+                // Mock implementation
+                showToast('Delete functionality requires backend implementation', 'info');
                 
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Claims Summary:</strong></p>
-                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
-                        <p>Total Claims: ${userClaims.length}</p>
-                        <p>Approved: ${userClaims.filter(c => c.status === 'approved' || c.status === 'paid').length}</p>
-                        <p>Pending: ${userClaims.filter(c => c.status === 'pending' || c.status === 'new').length}</p>
-                        <p>Rejected: ${userClaims.filter(c => c.status === 'rejected').length}</p>
-                    </div>
-                </div>
-            `;
-            
-            // Create a simple modal for user details
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'flex';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>User Details: ${user.name}</h2>
-                        <button class="close-btn" id="closeUserModal">&times;</button>
-                    </div>
-                    <div>${detailsHTML}</div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Add close functionality
-            modal.querySelector('#closeUserModal').addEventListener('click', function() {
-                document.body.removeChild(modal);
-            });
-            
-            // Close when clicking outside
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    document.body.removeChild(modal);
-                }
-            });
-        }
-        
-        // Function to edit user
-        function editUser(userId) {
-            showToast("Edit user functionality would open a form in a real application", "info");
-        }
-        
-        // Function to delete user
-        function deleteUser(userId) {
-            if (userId === currentUser.id) {
-                showToast("You cannot delete your own account", "error");
-                return;
+            } catch (error) {
+                showToast(error.message, 'error');
             }
-            
-            if (!confirm(`Are you sure you want to delete user ${userId}? This action cannot be undone.`)) return;
-            
-            // Remove user from users array
-            const userIndex = users.findIndex(u => u.id === userId);
-            if (userIndex !== -1) {
-                users.splice(userIndex, 1);
+        }
+        
+        // Function to update claim status
+        async function updateClaimStatus(claimId, status) {
+            try {
+                // Mock implementation
+                showToast('Update status functionality requires backend implementation', 'info');
+                
+            } catch (error) {
+                showToast(error.message, 'error');
             }
-            
-            // Update users table
-            populateAdminUsersTable();
-            
-            showToast(`User ${userId} deleted successfully`);
         }
         
-        // Function to deactivate user
-        function deactivateUser(userId) {
-            const user = users.find(u => u.id === userId);
-            if (!user) return;
+        // Function to logout
+        function logout() {
+            localStorage.removeItem('hfa_auth_token');
+            localStorage.removeItem('hfa_user');
+            currentUser = null;
+            authToken = null;
             
-            user.status = "inactive";
-            populateAdminUsersTable();
-            showToast(`User ${userId} deactivated`);
-        }
-        
-        // Function to activate user
-        function activateUser(userId) {
-            const user = users.find(u => u.id === userId);
-            if (!user) return;
+            workerDashboard.classList.add('hidden');
+            adminDashboard.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+            loginForm.reset();
             
-            user.status = "active";
-            populateAdminUsersTable();
-            showToast(`User ${userId} activated`);
-        }
-        
-        // Function to update worker stats
-        function updateWorkerStats() {
-            if (!currentUser) return;
-            
-            // Get claims for current user only
-            const userClaims = claims.filter(claim => claim.userId === currentUser.id);
-            
-            const total = userClaims.length;
-            const pending = userClaims.filter(c => c.status === 'pending' || c.status === 'new').length;
-            const approved = userClaims.filter(c => c.status === 'approved' || c.status === 'verified' || c.status === 'paid').length;
-            const rejected = userClaims.filter(c => c.status === 'rejected').length;
-            
-            document.getElementById('workerTotalClaims').textContent = total;
-            document.getElementById('workerPendingClaims').textContent = pending;
-            document.getElementById('workerApprovedClaims').textContent = approved;
-            document.getElementById('workerRejectedClaims').textContent = rejected;
-        }
-        
-        // Function to update admin stats
-        function updateAdminStats() {
-            const total = claims.length;
-            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
-            const approved = claims.filter(c => c.status === 'approved' || c.status === 'verified' || c.status === 'paid').length;
-            const rejected = claims.filter(c => c.status === 'rejected').length;
-            
-            document.getElementById('adminTotalClaims').textContent = total;
-            document.getElementById('adminPendingClaims').textContent = pending;
-            document.getElementById('adminApprovedClaims').textContent = approved;
-            document.getElementById('adminRejectedClaims').textContent = rejected;
+            showToast('You have been logged out.', 'info');
         }
         
         // Function to show toast notifications
@@ -1998,7 +2117,9 @@
             toast.style.position = 'fixed';
             toast.style.bottom = '20px';
             toast.style.right = '20px';
-            toast.style.backgroundColor = type === 'error' ? '#f44336' : (type === 'info' ? '#2196f3' : '#4CAF50');
+            toast.style.backgroundColor = type === 'error' ? '#f44336' : 
+                                          type === 'info' ? '#2196f3' : 
+                                          type === 'warning' ? '#ff9800' : '#4CAF50';
             toast.style.color = 'white';
             toast.style.padding = '12px 24px';
             toast.style.borderRadius = '4px';
