@@ -744,6 +744,13 @@
                                         <input type="date" id="claimDate" class="form-control" required>
                                     </div>
                                 </div>
+
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="referenceNo">Reference No</label>
+                                        <input type="text" id="referenceNo" class="form-control" required>
+                                    </div>
+                                </div>
                                 
                                 <div class="form-col">
                                     <div class="form-group">
@@ -986,6 +993,14 @@
                                         <input type="date" id="adminClaimDate" class="form-control" required>
                                     </div>
                                 </div>
+
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminReferenceNo">Reference No</label>
+                                        <input type="text" id="adminReferenceNo" class="form-control" required>
+                                    </div>
+                                </div>
+
                                 
                                 <div class="form-col">
                                     <div class="form-group">
@@ -1082,6 +1097,7 @@
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
     
@@ -1096,6 +1112,21 @@
                 </div>
         </div>
     </div>
+
+    
+    <div id="viewUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalUserTitle">User Details</h2>
+                <button class="close-btn" id="closeViewUserModal">&times;</button>
+            </div>
+            
+            <div id="viewUserDetails">
+                </div>
+        </div>
+    </div>
+
+
     
     <div id="createUserModal" class="modal">
         <div class="modal-content">
@@ -1199,8 +1230,17 @@
             
             // Set default date in claim forms to today
             const today = now.toISOString().split('T')[0];
-            document.getElementById('claimDate').value = today;
+            document.getElementById('claimDate').value = today;            
             document.getElementById('adminClaimDate').value = today;
+
+            const generateReferenceNo = () => {
+                const prefix = 'HFA';
+                const randomNum = Math.floor(100000 + Math.random() * 900000); // 6 digit random number
+                return `${prefix}-${randomNum}`;
+            };
+
+            document.getElementById('referenceNo').value = generateReferenceNo();
+            document.getElementById('adminReferenceNo').value = generateReferenceNo();
             
             // Check for saved token
             const savedToken = localStorage.getItem('hfa_auth_token');
@@ -1250,11 +1290,14 @@
                     });
                     
                     const data = await response.json();
+
+                    // console.log(data);
+                    
                     
                     if (response.ok) {
                         // Save token and user data
-                        authToken = data.token;
-                        currentUser = data.user;
+                        authToken = data.data.token;
+                        currentUser = data.data.user;
                         
                         localStorage.setItem('hfa_auth_token', authToken);
                         localStorage.setItem('hfa_user', JSON.stringify(currentUser));
@@ -1503,7 +1546,7 @@
             myClaimsTableElement.style.display = 'none';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/claim/my-claim`, {
+                const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -1517,18 +1560,21 @@
                 }
                 
                 const data = await response.json();
+
+                // console.log(data);
+                
                 
                 if (response.ok) {
                     // Clear tables
                     tableBody.innerHTML = '';
                     myClaimsTableBody.innerHTML = '';
                     
-                    if (data.claims && data.claims.length > 0) {
+                    if (data.data && data.data.length > 0) {
                         // Update stats
-                        updateWorkerStats(data.claims);
+                        updateWorkerStats(data.data);
                         
                         // Populate tables
-                        data.claims.forEach(claim => {
+                        data.data.forEach(claim => {
                             const row = createClaimRow(claim, false);
                             tableBody.appendChild(row.cloneNode(true));
                             myClaimsTableBody.appendChild(row);
@@ -1582,15 +1628,17 @@
             loadingElement.style.display = 'block';
             emptyElement.style.display = 'none';
             tableElement.style.display = 'none';
-            
+             
             try {
-                const response = await fetch(`${API_BASE_URL}/claim/all`, {
+                const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
                         'Content-Type': 'application/json'
                     }
                 });
+
+                
                 
                 if (response.status === 401) {
                     logout();
@@ -1598,20 +1646,21 @@
                 }
                 
                 const data = await response.json();
+                // console.log(data);
                 
                 if (response.ok) {
                     // Clear table
                     tableBody.innerHTML = '';
                     
-                    if (data.claims && data.claims.length > 0) {
+                    if (data.data && data.data.length > 0) {
                         // Filter claims
-                        let filteredClaims = data.claims;
+                        let filteredClaims = data.data;
                         if (filterStatus !== 'all') {
-                            filteredClaims = data.claims.filter(claim => claim.status === filterStatus);
+                            filteredClaims = data.data.filter(claim => claim.status === filterStatus);
                         }
                         
                         // Update stats
-                        updateAdminStats(data.claims);
+                        updateAdminStats(data.data);
                         
                         if (filteredClaims.length > 0) {
                             // Populate table
@@ -1649,20 +1698,127 @@
         
         // Function to load users
         async function loadUsers() {
-            // Note: The API doesn't have a users endpoint
-            // In a real implementation, you would fetch users from the backend
-            // For now, we'll show a message
-            const tableBody = document.getElementById('usersTableBody');
-            const loadingElement = document.getElementById('usersLoading');
-            const emptyElement = document.getElementById('usersEmpty');
-            const tableElement = document.getElementById('usersTable');
+            const res = await fetch(`${API_BASE_URL}/users`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await res.json();
+            // console.log(data);
             
-            loadingElement.style.display = 'none';
-            emptyElement.style.display = 'block';
-            tableElement.style.display = 'none';
+            if (res.ok) {
+                const usersTableBody = document.getElementById('usersTableBody');
+                usersTableBody.innerHTML = '';
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.employee_id || user._id || 'N/A'}</td>
+                            <td>${user.name || 'N/A'}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td>${user.role || 'N/A'}</td>
+                            <td>${user.status || 'N/A'}</td>
+                            <td>
+                                <button class="btn-primary btn-small view-user-btn" onclick="viewUserDetails('${user._id}')" data-id="${user._id}">View</button>
+                                <button class="btn-danger btn-small delete-user-btn" onclick="deleteUser('${user._id}')" data-id="${user._id}">Delete</button>
+                            </td>
+                        `;
+                        usersTableBody.appendChild(row);
+                    });
+                    
+                    // Show table
+                    document.getElementById('usersLoading').style.display = 'none';
+                    document.getElementById('usersTable').style.display = 'table';
+                    document.getElementById('usersEmpty').style.display = 'none';
+                } else {
+                    // Show empty state
+                    document.getElementById('usersLoading').style.display = 'none';
+                    document.getElementById('usersEmpty').style.display = 'block';
+                    document.getElementById('usersTable').style.display = 'none';
+                }
+            } else {
+                showToast(data.message || 'Failed to load users', 'error');
+                return;
+            }
+            // const loadingElement = document.getElementById('usersLoading');
+            // const emptyElement = document.getElementById('usersEmpty');
+            // const tableElement = document.getElementById('usersTable');
+            // loadingElement.style.display = 'none';
+            // emptyElement.style.display = 'block';
+            // tableElement.style.display = 'none';
             
             // showToast('User management requires backend implementation', 'info');
         }
+        
+        //Function to delete a user
+        async function deleteUser(userId) {
+            if (!currentUser || !authToken) return;
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await res.json();
+                // console.log(data);
+                if (res.ok) {
+                    showToast('User deleted successfully', 'success');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Failed to delete user', 'error');
+                }
+            } catch (error) {
+                console.log(error);
+                
+            }
+            
+        }
+
+        //function to view user details
+        async function viewUserDetails(userId) {
+            if (!currentUser || !authToken) return;
+            
+            const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            // console.log(data);
+            
+            if (res.ok) {
+                const user = data.data;
+                let userDetailsHtml = `
+                    <p><strong>Employee ID:</strong> ${user.employee_id || 'N/A'}</p>
+                    <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+                    <p><strong>Role:</strong> ${user.role || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${user.status || 'N/A'}</p>
+                    <p><strong>Department:</strong> ${user.department || 'N/A'}</p>
+                    <p><strong>Created At:</strong> ${new Date(user.createdAt).toLocaleDateString('en-GB')}</p>
+                `;
+                
+                document.getElementById('viewUserDetails').innerHTML = userDetailsHtml;
+                document.getElementById('viewUserModal').style.display = 'flex';
+            } else {
+                showToast(data.message || 'Failed to load user details', 'error');
+            }
+        }
+
+        document.getElementById('closeViewUserModal').addEventListener('click', function() {
+            document.getElementById('viewUserModal').style.display = 'none';
+            document.getElementById('viewUserDetails').innerHTML = '';
+        });
+        
         
         // Function to create a claim row
         function createClaimRow(claim, isAdmin = false) {
@@ -1677,12 +1833,12 @@
             
             // Get user info for admin view
             let userInfo = '';
-            if (isAdmin && claim.user) {
-                userInfo = `${claim.user.name || claim.user.email} <span class="user-badge">${claim.user.id || 'N/A'}</span>`;
+            if (isAdmin && claim.user_name || claim.employee_id) {
+                userInfo = `${claim.user_name || claim.user.email} <span class="user-badge">${claim.employee_id || 'N/A'}</span>`;
             }
             
             row.innerHTML = `
-                <td>${claim.id || claim._id || 'N/A'}</td>
+                <td>${claim.claim_id || claim._id || 'N/A'}</td>
                 ${isAdmin ? `<td>${userInfo}</td>` : ''}
                 <td>${formattedDate}</td>
                 <td>${claim.description || 'No description'}</td>
@@ -1728,11 +1884,12 @@
                 return;
             }
             
-            let claimDate, claimCategory, claimDescription, claimAmount, claimNotes, claimReceipt;
+            let claimDate, claimCategory, claimDescription, claimAmount, claimNotes, claimReceipt, claimId;
             let submitBtn, submitBtnText, submitBtnSpinner, formError, formErrorMessage;
             
             if (role === 'worker') {
                 claimDate = document.getElementById('claimDate').value;
+                claimId = document.getElementById('referenceNo').value;
                 claimCategory = document.getElementById('claimCategory').value;
                 claimDescription = document.getElementById('claimDescription').value;
                 claimAmount = document.getElementById('claimAmount').value;
@@ -1745,6 +1902,7 @@
                 formErrorMessage = document.getElementById('claimFormErrorMessage');
             } else {
                 claimDate = document.getElementById('adminClaimDate').value;
+                claimId = document.getElementById('adminReferenceNo').value;
                 claimCategory = document.getElementById('adminClaimCategory').value;
                 claimDescription = document.getElementById('adminClaimDescription').value;
                 claimAmount = document.getElementById('adminClaimAmount').value;
@@ -1758,7 +1916,7 @@
             }
             
             // Validate
-            if (!claimDate || !claimCategory || !claimDescription || !claimAmount) {
+            if (!claimDate || !claimCategory || !claimDescription || !claimAmount || !claimId) {
                 formError.style.display = 'block';
                 formErrorMessage.textContent = 'Please fill in all required fields';
                 return;
@@ -1771,7 +1929,7 @@
             formError.style.display = 'none';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/claim/create`, {
+                const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -1779,6 +1937,7 @@
                     },
                     body: JSON.stringify({
                         date: claimDate,
+                        claim_id: claimId,
                         category: claimCategory,
                         description: claimDescription,
                         amount: parseFloat(claimAmount),
@@ -1786,9 +1945,12 @@
                         notes: claimNotes
                     })
                 });
+
+                // console.log(claimId);
+                
                 
                 const data = await response.json();
-                
+                console.log(data);
                 if (response.ok) {
                     showToast('Claim submitted successfully!', 'success');
                     
@@ -1856,10 +2018,11 @@
             formError.style.display = 'none';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+                const response = await fetch(`${API_BASE_URL}/users`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization' : `Bearer ${authToken}`
                     },
                     body: JSON.stringify({
                         name: userName,
@@ -1871,6 +2034,9 @@
                 });
                 
                 const data = await response.json();
+
+                // console.log(data);
+                
                 
                 if (response.ok) {
                     showToast('User created successfully!', 'success');
@@ -1971,13 +2137,13 @@
             // Approve claim button (admin only)
             if (e.target.classList.contains('approve-claim-btn')) {
                 const claimId = e.target.getAttribute('data-id');
-                await updateClaimStatus(claimId, 'approved');
+                await updateClaimStatus(claimId, 'approve');
             }
             
             // Reject claim button (admin only)
             if (e.target.classList.contains('reject-claim-btn')) {
                 const claimId = e.target.getAttribute('data-id');
-                await updateClaimStatus(claimId, 'rejected');
+                await updateClaimStatus(claimId, 'reject');
             }
         });
         
@@ -1986,7 +2152,7 @@
             try {
                 // We use the existing loaded data if possible, or fetch it
                 // Since we don't store claims globally, we'll fetch all again
-                const response = await fetch(`${API_BASE_URL}/claim/all`, {
+                const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -1996,7 +2162,8 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    const claim = data.claims.find(c => c._id === claimId || c.id === claimId);
+                    const claim = data.data.find(c => c._id === claimId || c.id === claimId);
+                    // console.log(data);
                     
                     if (claim) {
                         displayClaimModal(claim, isAdmin);
@@ -2023,7 +2190,7 @@
             // Create details HTML
             let detailsHTML = `
                 <div style="margin-bottom: 20px;">
-                    <p><strong>Claim ID:</strong> ${claim._id || claim.id}</p>
+                    <p><strong>Claim ID:</strong> ${claim.claim_id || claim.id}</p>
                     ${claim.user ? `<p><strong>Submitted By:</strong> ${claim.user.name || claim.user.email}</p>` : ''}
                     <p><strong>Date Submitted:</strong> ${formattedDate}</p>
                     <p><strong>Status:</strong> ${statusBadge}</p>
@@ -2057,7 +2224,7 @@
             
             // Set modal content
             document.getElementById('claimDetails').innerHTML = detailsHTML;
-            document.getElementById('modalClaimTitle').textContent = `Claim Details: ${claim._id || claim.id}`;
+            document.getElementById('modalClaimTitle').textContent = `Claim Details: ${claim.claim_id || claim.id}`;
             
             // Show modal
             document.getElementById('viewClaimModal').style.display = 'flex';
@@ -2068,19 +2235,55 @@
             if (!confirm('Are you sure you want to delete this claim?')) return;
             
             try {
-                // Mock implementation
-                showToast('Delete functionality requires backend implementation', 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+
+                
+                if (response.ok) {
+                    showToast('Claim deleted successfully!', 'success');
+                    loadWorkerClaims();
+                } else {
+                    throw new Error('Failed to delete claim');
+                }
                 
             } catch (error) {
                 showToast(error.message, 'error');
+                console.log(error);                
             }
         }
         
         // Function to update claim status
         async function updateClaimStatus(claimId, status) {
             try {
-                // Mock implementation
-                showToast('Update status functionality requires backend implementation', 'info');
+                const res = await fetch(`${API_BASE_URL}/claims/${claimId}/${status}`, {
+                    method: "PUT",
+                    headers: { 
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+
+                const data = await res.json()
+
+                // console.log(data);
+
+                if(data.success){
+                    showToast(data.message,'success')
+                    loadWorkerClaims()
+                    loadAdminClaims()
+                }else{
+                    showToast(data.message, 'error')
+                }
+                
+                
                 
             } catch (error) {
                 showToast(error.message, 'error');
