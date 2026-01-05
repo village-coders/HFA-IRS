@@ -135,6 +135,8 @@
             position: fixed;
             height: 100%;
             overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
         
         .sidebar-header {
@@ -171,6 +173,7 @@
             margin-right: 12px;
             width: 20px;
             text-align: center;
+            font-size: 18px;
         }
         
         .user-info {
@@ -203,6 +206,7 @@
             flex: 1;
             margin-left: 250px;
             padding: 30px;
+            transition: margin-left 0.3s ease;
         }
         
         .header {
@@ -210,11 +214,19 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .header h1 {
             color: var(--primary-color);
             font-size: 28px;
+            flex: 1;
+        }
+        
+        .date-display {
+            color: #666;
+            font-weight: 500;
         }
         
         .stats-cards {
@@ -231,6 +243,12 @@
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
         
         .stat-icon {
@@ -261,6 +279,11 @@
             box-shadow: var(--shadow);
             padding: 25px;
             margin-bottom: 30px;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
         
         .card-header {
@@ -270,6 +293,8 @@
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .card-header h2 {
@@ -280,53 +305,79 @@
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: var(--border-radius);
             border: none;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn-primary:hover {
             background-color: var(--secondary-color);
+            transform: translateY(-2px);
         }
         
         .btn-small {
-            padding: 5px 10px;
-            font-size: 14px;
+            padding: 6px 12px;
+            font-size: 13px;
             margin-right: 5px;
             margin-bottom: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .btn-success {
             background-color: var(--accent-color);
         }
         
+        .btn-success:hover {
+            background-color: #3d8b40;
+        }
+        
         .btn-warning {
             background-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e68900;
         }
         
         .btn-danger {
             background-color: var(--danger-color);
         }
         
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        
         .btn-info {
             background-color: #17a2b8;
         }
         
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
         .table-container {
             overflow-x: auto;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px;
         }
         
         th {
             text-align: left;
-            padding: 12px 15px;
+            padding: 15px;
             background-color: #f8f9fa;
             color: var(--primary-color);
             font-weight: 600;
@@ -334,7 +385,7 @@
         }
         
         td {
-            padding: 12px 15px;
+            padding: 15px;
             border-bottom: 1px solid var(--border-color);
         }
         
@@ -344,10 +395,12 @@
         
         .status-badge {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .status-new {
@@ -376,18 +429,28 @@
         }
         
         .status-paid {
+            background-color: #e3f2fd;
+            color: #1976d32;
+        }
+        
+        .status-active {
             background-color: #e8f5e9;
             color: #2e7d32;
         }
         
-        .status-recommendation {
-            background-color: #e1f5fe;
-            color: #0277bd;
+        .status-inactive {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-suspended {
+            background-color: #fff3e0;
+            color: #ef6c00;
         }
         
         .user-badge {
             display: inline-block;
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
@@ -417,18 +480,33 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            z-index: 2000;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         
         .modal-content {
             background-color: white;
             border-radius: var(--border-radius);
-            width: 90%;
+            width: 100%;
             max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .modal-header {
@@ -450,16 +528,23 @@
             font-size: 24px;
             cursor: pointer;
             color: #666;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: var(--danger-color);
         }
         
         .form-row {
             display: flex;
             gap: 20px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         
         .form-col {
             flex: 1;
+            min-width: 200px;
         }
         
         .form-actions {
@@ -477,11 +562,12 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
         }
         
         .btn-secondary:hover {
             background-color: #5a6268;
+            transform: translateY(-2px);
         }
         
         .hidden {
@@ -494,24 +580,34 @@
         
         .section.active {
             display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: #666;
         }
         
         .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: #ccc;
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
         }
         
         .error-message {
             color: #f44336;
             font-size: 14px;
             margin-top: 5px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: var(--border-radius);
+            border-left: 4px solid #f44336;
         }
         
         /* File input styling */
@@ -528,6 +624,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-right: 10px;
+            transition: background-color 0.3s;
         }
         
         .form-control[type="file"]::-webkit-file-upload-button:hover {
@@ -543,13 +640,16 @@
         }
         
         .status-option {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: 2px solid #dee2e6;
-            border-radius: 20px;
+            border-radius: var(--border-radius);
             background: white;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
         }
         
         .status-option:hover {
@@ -603,36 +703,97 @@
             color: white;
         }
         
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .toast.success {
+            background-color: var(--accent-color);
+        }
+        
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+        
+        .toast.info {
+            background-color: var(--primary-color);
+        }
+        
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+        
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 18px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 992px) {
             .sidebar {
-                width: 70px;
+                width: 250px;
+                transform: translateX(-100%);
             }
             
-            .sidebar-header h2, .menu-item span, .user-info p:first-child {
-                display: none;
-            }
-            
-            .menu-item {
-                justify-content: center;
-                padding: 15px 0;
-            }
-            
-            .menu-item i {
-                margin-right: 0;
-                font-size: 20px;
+            .sidebar.mobile-open {
+                transform: translateX(0);
             }
             
             .main-content {
-                margin-left: 70px;
+                margin-left: 0;
             }
             
-            .user-info {
-                padding: 15px 0;
-                text-align: center;
+            .mobile-menu-toggle {
+                display: block;
             }
             
-            .logout-btn span {
-                display: none;
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-top: 60px;
+            }
+            
+            .date-display {
+                align-self: flex-start;
             }
         }
         
@@ -643,7 +804,11 @@
             
             .form-row {
                 flex-direction: column;
-                gap: 0;
+                gap: 15px;
+            }
+            
+            .form-col {
+                min-width: 100%;
             }
             
             .main-content {
@@ -652,13 +817,136 @@
             
             .card-header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
                 gap: 15px;
             }
             
             .card-header h2 {
                 margin-bottom: 10px;
             }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+            
+            .status-option {
+                min-width: calc(50% - 10px);
+            }
+            
+            .table-container {
+                border: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+            
+            .btn-small {
+                display: block;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .status-option {
+                min-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stat-icon {
+                margin-right = 0;
+                margin-bottom: 15px;
+            }
+        }
+        
+        /* Image preview in claim details */
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Filter controls */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-controls select {
+            min-width: 150px;
+        }
+        
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        /* Claim details styling */
+        .claim-detail-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .claim-detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .claim-detail-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .claim-detail-value {
+            color: #555;
+        }
+        
+        /* User status badge */
+        .user-status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-suspended {
+            background-color: #fff3cd;
+            color: #856404;
         }
     </style>
 </head>
@@ -666,8 +954,8 @@
     <div id="loginPage" class="login-container">
         <div class="login-box">
             <div class="logo">
-                <h1>HFA<span></span></h1>
-                <p>Claims Management Dashboard</p>
+                <h1>HFA Claims</h1>
+                <p>Management Dashboard</p>
             </div>
             
             <form id="loginForm">
@@ -699,9 +987,12 @@
     </div>
     
     <div id="workerDashboard" class="dashboard-container hidden">
-        <div class="sidebar">
+        <button class="mobile-menu-toggle" id="workerMobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="sidebar" id="workerSidebar">
             <div class="sidebar-header">
-                <h2>HFA </h2>
+                <h2>HFA Claims</h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Worker Dashboard</p>
             </div>
             
@@ -782,11 +1073,13 @@
                 <div class="card">
                     <div class="card-header">
                         <h2>My Claims</h2>
-                        <div>
+                        <div class="filter-controls">
                             <button class="btn-primary" id="refreshClaimsBtn">
                                 <i class="fas fa-sync-alt"></i> Refresh
                             </button>
-                            <button class="btn-primary" id="newClaimBtnWorker">New Claim</button>
+                            <button class="btn-primary" id="newClaimBtnWorker">
+                                <i class="fas fa-plus"></i> New Claim
+                            </button>
                         </div>
                     </div>
                     
@@ -808,7 +1101,8 @@
                                 </tr>
                             </thead>
                             <tbody id="workerClaimsTableBody">
-                                </tbody>
+                                <!-- Claims will be populated here -->
+                            </tbody>
                         </table>
                         <div id="workerClaimsEmpty" class="empty-state" style="display: none;">
                             <i class="fas fa-inbox"></i>
@@ -837,7 +1131,7 @@
 
                                 <div class="form-col">
                                     <div class="form-group">
-                                        <label for="referenceNo">Reference No</label>
+                                        <label for="referenceNo">Reference No *</label>
                                         <input type="text" id="referenceNo" class="form-control" required>
                                     </div>
                                 </div>
@@ -939,7 +1233,8 @@
                                 </tr>
                             </thead>
                             <tbody id="myClaimsTableBody">
-                                </tbody>
+                                <!-- Claims will be populated here -->
+                            </tbody>
                         </table>
                         <div id="myClaimsEmpty" class="empty-state" style="display: none;">
                             <i class="fas fa-inbox"></i>
@@ -952,9 +1247,12 @@
     </div>
     
     <div id="adminDashboard" class="dashboard-container hidden">
-        <div class="sidebar">
+        <button class="mobile-menu-toggle" id="adminMobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="sidebar" id="adminSidebar">
             <div class="sidebar-header">
-                <h2>HFA </h2>
+                <h2>HFA Claims</h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Admin Dashboard</p>
             </div>
             
@@ -1035,8 +1333,8 @@
                 <div class="card">
                     <div class="card-header">
                         <h2>All Claims</h2>
-                        <div>
-                            <select id="filterStatus" class="form-control" style="display: inline-block; width: auto; margin-right: 10px;">
+                        <div class="filter-controls">
+                            <select id="filterStatus" class="form-control">
                                 <option value="all">All Status</option>
                                 <option value="pending">Pending</option>
                                 <option value="approved">Approved</option>
@@ -1068,7 +1366,8 @@
                                 </tr>
                             </thead>
                             <tbody id="adminClaimsTableBody">
-                                </tbody>
+                                <!-- Claims will be populated here -->
+                            </tbody>
                         </table>
                         <div id="adminClaimsEmpty" class="empty-state" style="display: none;">
                             <i class="fas fa-inbox"></i>
@@ -1097,11 +1396,10 @@
 
                                 <div class="form-col">
                                     <div class="form-group">
-                                        <label for="adminReferenceNo">Reference No</label>
+                                        <label for="adminReferenceNo">Reference No *</label>
                                         <input type="text" id="adminReferenceNo" class="form-control" required>
                                     </div>
                                 </div>
-
                                 
                                 <div class="form-col">
                                     <div class="form-group">
@@ -1172,7 +1470,17 @@
                 <div class="card">
                     <div class="card-header">
                         <h2>User Management</h2>
-                        <button class="btn-primary" id="createUserBtn">Create New User</button>
+                        <div class="filter-controls">
+                            <select id="userStatusFilter" class="form-control">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                            <button class="btn-primary" id="createUserBtn">
+                                <i class="fas fa-plus"></i> Create New User
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="card-body">
@@ -1198,7 +1506,8 @@
                                     </tr>
                                 </thead>
                                 <tbody id="usersTableBody">
-                                    </tbody>
+                                    <!-- Users will be populated here -->
+                                </tbody>
                             </table>
                             <div id="usersEmpty" class="empty-state" style="display: none;">
                                 <i class="fas fa-users"></i>
@@ -1212,6 +1521,7 @@
         </div>
     </div>
     
+    <!-- Modals -->
     <div id="viewClaimModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1220,7 +1530,8 @@
             </div>
             
             <div id="claimDetails">
-                </div>
+                <!-- Claim details will be populated here -->
+            </div>
         </div>
     </div>
     
@@ -1233,7 +1544,7 @@
             
             <div id="statusUpdateDetails">
                 <div class="form-group">
-                    <label for="statusSelect">Select Status</label>
+                    <label>Select Status</label>
                     <div class="status-selector">
                         <div class="status-option pending" data-status="pending">Pending</div>
                         <div class="status-option approved" data-status="approved">Approved</div>
@@ -1261,7 +1572,6 @@
             </div>
         </div>
     </div>
-
     
     <div id="viewUserModal" class="modal">
         <div class="modal-content">
@@ -1271,11 +1581,10 @@
             </div>
             
             <div id="viewUserDetails">
-                </div>
+                <!-- User details will be populated here -->
+            </div>
         </div>
     </div>
-
-
     
     <div id="createUserModal" class="modal">
         <div class="modal-content">
@@ -1322,9 +1631,24 @@
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="createUserDepartment">Department</label>
-                        <input type="text" id="createUserDepartment" class="form-control" placeholder="Enter department (optional)">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="createUserStatus">Status *</label>
+                                <select id="createUserStatus" class="form-control" required>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="suspended">Suspended</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="createUserDepartment">Department</label>
+                                <input type="text" id="createUserDepartment" class="form-control" placeholder="Enter department (optional)">
+                            </div>
+                        </div>
                     </div>
                     
                     <div id="createUserFormError" class="form-group" style="display: none;">
@@ -1345,7 +1669,6 @@
 
     <script>
         // API Configuration
-        // Using a CORS proxy to bypass the restriction for localhost testing
         const API_BASE_URL = 'https://hfa-internal-record-system.onrender.com/api';
         
         // Current user data
@@ -1369,28 +1692,14 @@
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
             // Set current date
-            const now = new Date();
-            const formattedDate = now.toLocaleDateString('en-GB', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            document.getElementById('currentDate').textContent = formattedDate;
-            document.getElementById('adminCurrentDate').textContent = formattedDate;
+            updateDateDisplay();
             
             // Set default date in claim forms to today
-            const today = now.toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
             document.getElementById('claimDate').value = today;            
             document.getElementById('adminClaimDate').value = today;
 
-            const generateReferenceNo = () => {
-                const prefix = 'HFA';
-                const randomNum = Math.floor(100000 + Math.random() * 900000); // 6 digit random number
-                return `${prefix}-${randomNum}`;
-            };
-
+            // Generate initial reference numbers
             document.getElementById('referenceNo').value = generateReferenceNo();
             document.getElementById('adminReferenceNo').value = generateReferenceNo();
             
@@ -1414,65 +1723,64 @@
                 }
             }
             
-            // Login form submission with ROBUST PAYLOAD FIX
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Update date every minute
+            setInterval(updateDateDisplay, 60000);
+        });
+        
+        function updateDateDisplay() {
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-GB', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const time = now.toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            document.getElementById('currentDate').textContent = `${formattedDate} | ${time}`;
+            document.getElementById('adminCurrentDate').textContent = `${formattedDate} | ${time}`;
+        }
+        
+        function setupEventListeners() {
+            // Login form submission
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+                await handleLogin();
+            });
+            
+            // Mobile menu toggle
+            document.getElementById('workerMobileMenuToggle')?.addEventListener('click', function() {
+                document.getElementById('workerSidebar').classList.toggle('mobile-open');
+            });
+            
+            document.getElementById('adminMobileMenuToggle')?.addEventListener('click', function() {
+                document.getElementById('adminSidebar').classList.toggle('mobile-open');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                const workerSidebar = document.getElementById('workerSidebar');
+                const adminSidebar = document.getElementById('adminSidebar');
+                const workerToggle = document.getElementById('workerMobileMenuToggle');
+                const adminToggle = document.getElementById('adminMobileMenuToggle');
                 
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+                if (workerSidebar?.classList.contains('mobile-open') && 
+                    !workerSidebar.contains(e.target) && 
+                    e.target !== workerToggle) {
+                    workerSidebar.classList.remove('mobile-open');
+                }
                 
-                // Show loading state
-                loginButton.disabled = true;
-                loginButtonText.textContent = 'Logging in...';
-                loginButtonSpinner.classList.remove('hidden');
-                loginError.style.display = 'none';
-                
-                try {
-                    // Send both email and username keys to satisfy backend requirements
-                    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: username,
-                            username: username,
-                            password: password
-                        })
-                    });
-                    
-                    const data = await response.json();
-
-                    // console.log(data);
-                    
-                    
-                    if (response.ok) {
-                        // Save token and user data
-                        authToken = data.data.token;
-                        currentUser = data.data.user;
-                        
-                        localStorage.setItem('hfa_auth_token', authToken);
-                        localStorage.setItem('hfa_user', JSON.stringify(currentUser));
-                        
-                        if (currentUser.role === 'worker') {
-                            showWorkerDashboard();
-                        } else if (currentUser.role === 'admin') {
-                            showAdminDashboard();
-                        }
-                        
-                        showToast('Login successful!', 'success');
-                    } else {
-                        throw new Error(data.message || 'Login failed');
-                    }
-                } catch (error) {
-                    loginError.style.display = 'block';
-                    loginErrorMessage.textContent = error.message;
-                    showToast(error.message, 'error');
-                } finally {
-                    // Reset loading state
-                    loginButton.disabled = false;
-                    loginButtonText.textContent = 'Log In';
-                    loginButtonSpinner.classList.add('hidden');
+                if (adminSidebar?.classList.contains('mobile-open') && 
+                    !adminSidebar.contains(e.target) && 
+                    e.target !== adminToggle) {
+                    adminSidebar.classList.remove('mobile-open');
                 }
             });
             
@@ -1499,18 +1807,7 @@
             });
             
             // Worker menu navigation
-            const workerMenuItems = document.querySelectorAll('#workerDashboard .menu-item');
-            workerMenuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove active class from all items
-                    workerMenuItems.forEach(i => i.classList.remove('active'));
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    const section = this.getAttribute('data-section');
-                    switchWorkerSection(section + 'Section', this.querySelector('span').textContent);
-                });
-            });
+            setupMenuNavigation('#workerDashboard', switchWorkerSection);
             
             // Worker new claim form
             document.getElementById('newClaimForm').addEventListener('submit', async function(e) {
@@ -1519,9 +1816,7 @@
             });
             
             document.getElementById('resetClaimForm').addEventListener('click', function() {
-                document.getElementById('newClaimForm').reset();
-                document.getElementById('claimDate').value = today;
-                document.getElementById('claimFormError').style.display = 'none';
+                resetForm('newClaimForm', 'claimDate', generateReferenceNo());
             });
             
             // Admin dashboard events
@@ -1539,24 +1834,11 @@
             });
             
             document.getElementById('resetAdminClaimForm').addEventListener('click', function() {
-                document.getElementById('adminNewClaimForm').reset();
-                document.getElementById('adminClaimDate').value = today;
-                document.getElementById('adminClaimFormError').style.display = 'none';
+                resetForm('adminNewClaimForm', 'adminClaimDate', generateReferenceNo());
             });
             
             // Admin menu navigation
-            const adminMenuItems = document.querySelectorAll('#adminDashboard .menu-item');
-            adminMenuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove active class from all items
-                    adminMenuItems.forEach(i => i.classList.remove('active'));
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    const section = this.getAttribute('data-section');
-                    switchAdminSection(section + 'Section', this.querySelector('span').textContent);
-                });
-            });
+            setupMenuNavigation('#adminDashboard', switchAdminSection);
             
             // Admin new claim form
             document.getElementById('adminNewClaimForm').addEventListener('submit', async function(e) {
@@ -1566,16 +1848,16 @@
             
             // User management
             document.getElementById('createUserBtn').addEventListener('click', function() {
-                document.getElementById('createUserModal').style.display = 'flex';
+                showModal('createUserModal');
                 document.getElementById('createUserForm').reset();
             });
             
             document.getElementById('closeCreateUserModal').addEventListener('click', function() {
-                document.getElementById('createUserModal').style.display = 'none';
+                hideModal('createUserModal');
             });
             
             document.getElementById('cancelCreateUser').addEventListener('click', function() {
-                document.getElementById('createUserModal').style.display = 'none';
+                hideModal('createUserModal');
             });
             
             document.getElementById('createUserForm').addEventListener('submit', async function(e) {
@@ -1583,72 +1865,28 @@
                 await createUser();
             });
             
-            // Filter status for admin
+            // Filter status for admin claims
             document.getElementById('filterStatus').addEventListener('change', function() {
                 loadAdminClaims();
             });
             
+            // Filter status for users
+            document.getElementById('userStatusFilter').addEventListener('change', function() {
+                loadUsers();
+            });
+            
             // User search
-            document.getElementById('userSearch').addEventListener('input', function() {
+            document.getElementById('userSearch').addEventListener('input', debounce(function() {
                 filterUsers(this.value);
-            });
+            }, 300));
             
-            // Close modals when clicking outside
-            window.addEventListener('click', function(e) {
-                if (e.target === document.getElementById('viewClaimModal')) {
-                    document.getElementById('viewClaimModal').style.display = 'none';
-                }
-                if (e.target === document.getElementById('createUserModal')) {
-                    document.getElementById('createUserModal').style.display = 'none';
-                }
-                if (e.target === document.getElementById('viewUserModal')) {
-                    document.getElementById('viewUserModal').style.display = 'none';
-                }
-                if (e.target === document.getElementById('updateStatusModal')) {
-                    document.getElementById('updateStatusModal').style.display = 'none';
-                }
-            });
-            
-            // Close view claim modal
-            document.getElementById('closeViewModal').addEventListener('click', function() {
-                document.getElementById('viewClaimModal').style.display = 'none';
-            });
-            
-            // Close view user modal
-            document.getElementById('closeViewUserModal').addEventListener('click', function() {
-                document.getElementById('viewUserModal').style.display = 'none';
-            });
-            
-            // Close status update modal
-            document.getElementById('closeStatusModal').addEventListener('click', function() {
-                document.getElementById('updateStatusModal').style.display = 'none';
-                resetStatusModal();
-            });
-            
-            document.getElementById('cancelStatusUpdate').addEventListener('click', function() {
-                document.getElementById('updateStatusModal').style.display = 'none';
-                resetStatusModal();
-            });
+            // Close modals
+            setupModalCloseEvents();
             
             // Status selector events
             document.querySelectorAll('.status-option').forEach(option => {
                 option.addEventListener('click', function() {
-                    // Remove selected class from all options
-                    document.querySelectorAll('.status-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-                    
-                    // Show notes field for non-pending statuses
-                    const status = this.getAttribute('data-status');
-                    const notesGroup = document.getElementById('statusNotesGroup');
-                    if (status !== 'pending') {
-                        notesGroup.style.display = 'block';
-                    } else {
-                        notesGroup.style.display = 'none';
-                    }
+                    selectStatusOption(this);
                 });
             });
             
@@ -1656,7 +1894,70 @@
             document.getElementById('saveStatusUpdate').addEventListener('click', async function() {
                 await updateClaimStatus();
             });
-        });
+            
+            // Table button clicks
+            document.addEventListener('click', async function(e) {
+                await handleTableButtonClick(e);
+            });
+        }
+        
+        function setupMenuNavigation(dashboardId, switchSectionFunction) {
+            const menuItems = document.querySelectorAll(`${dashboardId} .menu-item`);
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    const section = this.getAttribute('data-section');
+                    switchSectionFunction(section + 'Section', this.querySelector('span').textContent);
+                    
+                    // Close mobile menu on selection
+                    if (window.innerWidth <= 992) {
+                        const sidebar = dashboardId === '#workerDashboard' ? 
+                            document.getElementById('workerSidebar') : 
+                            document.getElementById('adminSidebar');
+                        sidebar?.classList.remove('mobile-open');
+                    }
+                });
+            });
+        }
+        
+        function setupModalCloseEvents() {
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                const modals = ['viewClaimModal', 'createUserModal', 'viewUserModal', 'updateStatusModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (e.target === modal) {
+                        hideModal(modalId);
+                        if (modalId === 'updateStatusModal') {
+                            resetStatusModal();
+                        }
+                    }
+                });
+            });
+            
+            // Close buttons
+            document.getElementById('closeViewModal').addEventListener('click', function() {
+                hideModal('viewClaimModal');
+            });
+            
+            document.getElementById('closeViewUserModal').addEventListener('click', function() {
+                hideModal('viewUserModal');
+            });
+            
+            document.getElementById('closeStatusModal').addEventListener('click', function() {
+                hideModal('updateStatusModal');
+                resetStatusModal();
+            });
+            
+            document.getElementById('cancelStatusUpdate').addEventListener('click', function() {
+                hideModal('updateStatusModal');
+                resetStatusModal();
+            });
+        }
         
         // Function to show worker dashboard
         function showWorkerDashboard() {
@@ -1686,19 +1987,7 @@
         
         // Function to switch worker sections
         function switchWorkerSection(sectionId, pageTitle) {
-            // Hide all sections
-            document.querySelectorAll('#workerDashboard .section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show the selected section
-            const sectionElement = document.getElementById(sectionId);
-            if (sectionElement) {
-                sectionElement.classList.add('active');
-            }
-            
-            // Update page title
-            document.getElementById('workerPageTitle').textContent = pageTitle;
+            switchSection('worker', sectionId, pageTitle);
             
             // Load data if needed
             if (sectionId === 'myClaimsSection') {
@@ -1708,43 +1997,38 @@
         
         // Function to switch admin sections
         function switchAdminSection(sectionId, pageTitle) {
-            // Hide all sections
-            document.querySelectorAll('#adminDashboard .section').forEach(section => {
+            switchSection('admin', sectionId, pageTitle);
+        }
+        
+        function switchSection(role, sectionId, pageTitle) {
+            const sections = document.querySelectorAll(`#${role}Dashboard .section`);
+            sections.forEach(section => {
                 section.classList.remove('active');
             });
             
-            // Show the selected section
             const sectionElement = document.getElementById(sectionId);
             if (sectionElement) {
                 sectionElement.classList.add('active');
             }
             
-            // Update page title
-            document.getElementById('adminPageTitle').textContent = pageTitle;
+            document.getElementById(`${role}PageTitle`).textContent = pageTitle;
         }
         
         // Function to load worker claims
         async function loadWorkerClaims() {
             if (!currentUser || !authToken) return;
             
-            const tableBody = document.getElementById('workerClaimsTableBody');
-            const myClaimsTableBody = document.getElementById('myClaimsTableBody');
             const loadingElement = document.getElementById('workerClaimsLoading');
             const emptyElement = document.getElementById('workerClaimsEmpty');
             const tableElement = document.getElementById('workerClaimsTable');
-            
+            const tableBody = document.getElementById('workerClaimsTableBody');
             const myClaimsLoadingElement = document.getElementById('myClaimsLoading');
             const myClaimsEmptyElement = document.getElementById('myClaimsEmpty');
             const myClaimsTableElement = document.getElementById('myClaimsTable');
+            const myClaimsTableBody = document.getElementById('myClaimsTableBody');
             
             // Show loading state
-            loadingElement.style.display = 'block';
-            emptyElement.style.display = 'none';
-            tableElement.style.display = 'none';
-            
-            myClaimsLoadingElement.style.display = 'block';
-            myClaimsEmptyElement.style.display = 'none';
-            myClaimsTableElement.style.display = 'none';
+            showLoadingState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement]);
             
             try {
                 const response = await fetch(`${API_BASE_URL}/claims`, {
@@ -1761,9 +2045,6 @@
                 }
                 
                 const data = await response.json();
-
-                // console.log(data);
-                
                 
                 if (response.ok) {
                     // Clear tables
@@ -1782,20 +2063,10 @@
                         });
                         
                         // Show tables
-                        loadingElement.style.display = 'none';
-                        tableElement.style.display = 'table';
-                        
-                        myClaimsLoadingElement.style.display = 'none';
-                        myClaimsTableElement.style.display = 'table';
+                        showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], true);
                     } else {
                         // Show empty state
-                        loadingElement.style.display = 'none';
-                        emptyElement.style.display = 'block';
-                        
-                        myClaimsLoadingElement.style.display = 'none';
-                        myClaimsEmptyElement.style.display = 'block';
-                        
-                        // Reset stats
+                        showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], false);
                         resetWorkerStats();
                     }
                 } else {
@@ -1803,14 +2074,7 @@
                 }
             } catch (error) {
                 showToast(error.message, 'error');
-                
-                // Show empty state
-                loadingElement.style.display = 'none';
-                emptyElement.style.display = 'block';
-                
-                myClaimsLoadingElement.style.display = 'none';
-                myClaimsEmptyElement.style.display = 'block';
-                
+                showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], false);
                 resetWorkerStats();
             }
         }
@@ -1819,17 +2083,15 @@
         async function loadAdminClaims() {
             if (!currentUser || !authToken) return;
             
-            const tableBody = document.getElementById('adminClaimsTableBody');
             const loadingElement = document.getElementById('adminClaimsLoading');
             const emptyElement = document.getElementById('adminClaimsEmpty');
             const tableElement = document.getElementById('adminClaimsTable');
+            const tableBody = document.getElementById('adminClaimsTableBody');
             const filterStatus = document.getElementById('filterStatus').value;
             
             // Show loading state
-            loadingElement.style.display = 'block';
-            emptyElement.style.display = 'none';
-            tableElement.style.display = 'none';
-             
+            showLoadingState([loadingElement], [emptyElement], [tableElement]);
+            
             try {
                 const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'GET',
@@ -1838,8 +2100,6 @@
                         'Content-Type': 'application/json'
                     }
                 });
-
-                
                 
                 if (response.status === 401) {
                     logout();
@@ -1847,7 +2107,6 @@
                 }
                 
                 const data = await response.json();
-                // console.log(data);
                 
                 if (response.ok) {
                     // Clear table
@@ -1871,17 +2130,14 @@
                             });
                             
                             // Show table
-                            loadingElement.style.display = 'none';
-                            tableElement.style.display = 'table';
+                            showTableState([loadingElement], [emptyElement], [tableElement], true);
                         } else {
                             // Show empty state
-                            loadingElement.style.display = 'none';
-                            emptyElement.style.display = 'block';
+                            showTableState([loadingElement], [emptyElement], [tableElement], false);
                         }
                     } else {
                         // Show empty state
-                        loadingElement.style.display = 'none';
-                        emptyElement.style.display = 'block';
+                        showTableState([loadingElement], [emptyElement], [tableElement], false);
                         resetAdminStats();
                     }
                 } else {
@@ -1889,128 +2145,11 @@
                 }
             } catch (error) {
                 showToast(error.message, 'error');
-                
-                // Show empty state
-                loadingElement.style.display = 'none';
-                emptyElement.style.display = 'block';
+                showTableState([loadingElement], [emptyElement], [tableElement], false);
                 resetAdminStats();
             }
         }
         
-        // Function to load users
-        async function loadUsers() {
-            const res = await fetch(`${API_BASE_URL}/users`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await res.json();
-            // console.log(data);
-            
-            if (res.ok) {
-                const usersTableBody = document.getElementById('usersTableBody');
-                usersTableBody.innerHTML = '';
-                if (data.data && data.data.length > 0) {
-                    data.data.forEach(user => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${user.employee_id || user._id || 'N/A'}</td>
-                            <td>${user.name || 'N/A'}</td>
-                            <td>${user.email || 'N/A'}</td>
-                            <td>${user.role || 'N/A'}</td>
-                            <td>${user.status || 'N/A'}</td>
-                            <td>
-                                <button class="btn-primary btn-small view-user-btn" onclick="viewUserDetails('${user._id}')" data-id="${user._id}">View</button>
-                                <button class="btn-danger btn-small delete-user-btn" onclick="deleteUser('${user._id}')" data-id="${user._id}">Delete</button>
-                            </td>
-                        `;
-                        usersTableBody.appendChild(row);
-                    });
-                    
-                    // Show table
-                    document.getElementById('usersLoading').style.display = 'none';
-                    document.getElementById('usersTable').style.display = 'table';
-                    document.getElementById('usersEmpty').style.display = 'none';
-                } else {
-                    // Show empty state
-                    document.getElementById('usersLoading').style.display = 'none';
-                    document.getElementById('usersEmpty').style.display = 'block';
-                    document.getElementById('usersTable').style.display = 'none';
-                }
-            } else {
-                showToast(data.message || 'Failed to load users', 'error');
-                return;
-            }
-        }
-        
-        //Function to delete a user
-        async function deleteUser(userId) {
-            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-                return;
-            }
-            
-            if (!currentUser || !authToken) return;
-            
-            try {
-                const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await res.json();
-                // console.log(data);
-                if (res.ok) {
-                    showToast('User deleted successfully', 'success');
-                    loadUsers();
-                } else {
-                    showToast(data.message || 'Failed to delete user', 'error');
-                }
-            } catch (error) {
-                console.log(error);
-                
-            }
-            
-        }
-
-        //function to view user details
-        async function viewUserDetails(userId) {
-            if (!currentUser || !authToken) return;
-            
-            const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await res.json();
-            // console.log(data);
-            
-            if (res.ok) {
-                const user = data.data;
-                let userDetailsHtml = `
-                    <p><strong>Employee ID:</strong> ${user.employee_id || 'N/A'}</p>
-                    <p><strong>Name:</strong> ${user.name || 'N/A'}</p>
-                    <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
-                    <p><strong>Role:</strong> ${user.role || 'N/A'}</p>
-                    <p><strong>Status:</strong> ${user.status || 'N/A'}</p>
-                    <p><strong>Department:</strong> ${user.department || 'N/A'}</p>
-                    <p><strong>Created At:</strong> ${new Date(user.createdAt).toLocaleDateString('en-GB')}</p>
-                `;
-                
-                document.getElementById('viewUserDetails').innerHTML = userDetailsHtml;
-                document.getElementById('viewUserModal').style.display = 'flex';
-            } else {
-                showToast(data.message || 'Failed to load user details', 'error');
-            }
-        }
-
         // Function to create a claim row
         function createClaimRow(claim, isAdmin = false) {
             const row = document.createElement('tr');
@@ -2024,8 +2163,10 @@
             
             // Get user info for admin view
             let userInfo = '';
-            if (isAdmin && claim.user_name || claim.employee_id) {
-                userInfo = `${claim.user_name || claim.user.email} <span class="user-badge">${claim.employee_id || 'N/A'}</span>`;
+            if (isAdmin && (claim.user_name || claim.employee_id || claim.user)) {
+                const userName = claim.user_name || (claim.user ? claim.user.name || claim.user.email : 'Unknown');
+                const userId = claim.employee_id || (claim.user ? claim.user.employee_id : 'N/A');
+                userInfo = `${userName} <span class="user-badge">${userId}</span>`;
             }
             
             row.innerHTML = `
@@ -2037,14 +2178,24 @@
                 <td>£${parseFloat(claim.amount || 0).toFixed(2)}</td>
                 <td>${statusBadge}</td>
                 <td>
-                    <button class="btn-primary btn-small view-claim-btn" data-id="${claim._id || claim.id}" data-admin="${isAdmin}">View</button>
-                    ${!isAdmin && (claim.status === 'pending' || claim.status === 'new') ? `
-                        <button class="btn-danger btn-small delete-claim-btn" data-id="${claim._id || claim.id}">Delete</button>
-                    ` : ''}
-                    ${isAdmin ? `
-                        <button class="btn-info btn-small update-status-btn" data-id="${claim._id || claim.id}">Update Status</button>
-                        <button class="btn-danger btn-small delete-claim-btn-admin" data-id="${claim._id || claim.id}">Delete</button>
-                    ` : ''}
+                    <div class="action-buttons">
+                        <button class="btn-primary btn-small view-claim-btn" data-id="${claim._id || claim.id}" data-admin="${isAdmin}">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${!isAdmin && (claim.status === 'pending' || claim.status === 'new') ? `
+                            <button class="btn-danger btn-small delete-claim-btn" data-id="${claim._id || claim.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        ` : ''}
+                        ${isAdmin ? `
+                            <button class="btn-info btn-small update-status-btn" data-id="${claim._id || claim.id}">
+                                <i class="fas fa-edit"></i> Status
+                            </button>
+                            <button class="btn-danger btn-small delete-claim-btn-admin" data-id="${claim._id || claim.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        ` : ''}
+                    </div>
                 </td>
             `;
             
@@ -2065,6 +2216,146 @@
                     return '<span class="status-badge status-paid">Paid</span>';
                 default:
                     return `<span class="status-badge">${status || 'Unknown'}</span>`;
+            }
+        }
+        
+        // Function to get user status badge HTML
+        function getUserStatusBadge(status) {
+            switch(status) {
+                case 'active':
+                    return '<span class="user-status-badge status-active">Active</span>';
+                case 'inactive':
+                    return '<span class="user-status-badge status-inactive">Inactive</span>';
+                case 'suspended':
+                    return '<span class="user-status-badge status-suspended">Suspended</span>';
+                default:
+                    return `<span class="user-status-badge">${status || 'Unknown'}</span>`;
+            }
+        }
+        
+        async function handleTableButtonClick(e) {
+            // View claim button
+            if (e.target.closest('.view-claim-btn')) {
+                const button = e.target.closest('.view-claim-btn');
+                const claimId = button.getAttribute('data-id');
+                const isAdmin = button.getAttribute('data-admin') === 'true';
+                await viewClaimDetails(claimId, isAdmin);
+            }
+            
+            // Delete claim button (worker only)
+            if (e.target.closest('.delete-claim-btn')) {
+                const button = e.target.closest('.delete-claim-btn');
+                const claimId = button.getAttribute('data-id');
+                await deleteClaim(claimId);
+            }
+            
+            // Delete claim button (admin)
+            if (e.target.closest('.delete-claim-btn-admin')) {
+                const button = e.target.closest('.delete-claim-btn-admin');
+                const claimId = button.getAttribute('data-id');
+                await deleteClaimAdmin(claimId);
+            }
+            
+            // Update status button (admin)
+            if (e.target.closest('.update-status-btn')) {
+                const button = e.target.closest('.update-status-btn');
+                const claimId = button.getAttribute('data-id');
+                await openStatusUpdateModal(claimId);
+            }
+            
+            // View user button
+            if (e.target.closest('.view-user-btn')) {
+                const button = e.target.closest('.view-user-btn');
+                const userId = button.getAttribute('data-id');
+                await viewUserDetails(userId);
+            }
+            
+            // Delete user button
+            if (e.target.closest('.delete-user-btn')) {
+                const button = e.target.closest('.delete-user-btn');
+                const userId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-name');
+                await deleteUser(userId, userName);
+            }
+            
+            // Activate user button
+            if (e.target.closest('.activate-user-btn')) {
+                const button = e.target.closest('.activate-user-btn');
+                const userId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-name');
+                await activateUser(userId, userName);
+            }
+            
+            // Deactivate user button
+            if (e.target.closest('.deactivate-user-btn')) {
+                const button = e.target.closest('.deactivate-user-btn');
+                const userId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-name');
+                await deactivateUser(userId, userName);
+            }
+            
+            // Suspend user button
+            if (e.target.closest('.suspend-user-btn')) {
+                const button = e.target.closest('.suspend-user-btn');
+                const userId = button.getAttribute('data-id');
+                const userName = button.getAttribute('data-name');
+                await suspendUser(userId, userName);
+            }
+        }
+        
+        // Function to handle login
+        async function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading state
+            loginButton.disabled = true;
+            loginButtonText.textContent = 'Logging in...';
+            loginButtonSpinner.classList.remove('hidden');
+            loginError.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: username,
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Save token and user data
+                    authToken = data.data.token;
+                    currentUser = data.data.user;
+                    
+                    localStorage.setItem('hfa_auth_token', authToken);
+                    localStorage.setItem('hfa_user', JSON.stringify(currentUser));
+                    
+                    if (currentUser.role === 'worker') {
+                        showWorkerDashboard();
+                    } else if (currentUser.role === 'admin') {
+                        showAdminDashboard();
+                    }
+                    
+                    showToast('Login successful!', 'success');
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                loginError.style.display = 'block';
+                loginErrorMessage.textContent = error.message;
+                showToast(error.message, 'error');
+            } finally {
+                // Reset loading state
+                loginButton.disabled = false;
+                loginButtonText.textContent = 'Log In';
+                loginButtonSpinner.classList.add('hidden');
             }
         }
         
@@ -2137,7 +2428,6 @@
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
-                        // Don't set Content-Type header for FormData, browser will set it with boundary
                     },
                     body: formData
                 });
@@ -2149,14 +2439,10 @@
                     
                     // Reset form
                     if (role === 'worker') {
-                        document.getElementById('newClaimForm').reset();
-                        document.getElementById('claimDate').value = new Date().toISOString().split('T')[0];
-                        document.getElementById('referenceNo').value = generateReferenceNo();
+                        resetForm('newClaimForm', 'claimDate', generateReferenceNo());
                         switchWorkerSection('manageClaimSection', 'Manage Claim Sheet');
                     } else {
-                        document.getElementById('adminNewClaimForm').reset();
-                        document.getElementById('adminClaimDate').value = new Date().toISOString().split('T')[0];
-                        document.getElementById('adminReferenceNo').value = generateReferenceNo();
+                        resetForm('adminNewClaimForm', 'adminClaimDate', generateReferenceNo());
                         switchAdminSection('adminManageClaimSection', 'Manage Claims');
                     }
                     
@@ -2181,168 +2467,376 @@
             }
         }
         
-        // Function to create a new user
-        async function createUser() {
-            if (!currentUser || !authToken) {
-                showToast('Please login first', 'error');
+        // Function to load users
+        async function loadUsers() {
+            const statusFilter = document.getElementById('userStatusFilter').value;
+            
+            const res = await fetch(`${API_BASE_URL}/users`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await res.json();
+            
+            if (res.ok) {
+                const usersTableBody = document.getElementById('usersTableBody');
+                usersTableBody.innerHTML = '';
+                if (data.data && data.data.length > 0) {
+                    // Filter users by status
+                    let filteredUsers = data.data;
+                    if (statusFilter !== 'all') {
+                        filteredUsers = data.data.filter(user => user.status === statusFilter);
+                    }
+                    
+                    if (filteredUsers.length > 0) {
+                        filteredUsers.forEach(user => {
+                            const row = document.createElement('tr');
+                            
+                            // Create action buttons based on user status
+                            let actionButtons = '';
+                            if (user.status === 'active') {
+                                actionButtons = `
+                                    <button class="btn-warning btn-small deactivate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                        <i class="fas fa-ban"></i> Deactivate
+                                    </button>
+                                    <button class="btn-danger btn-small suspend-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                        <i class="fas fa-lock"></i> Suspend
+                                    </button>
+                                `;
+                            } else if (user.status === 'inactive') {
+                                actionButtons = `
+                                    <button class="btn-success btn-small activate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                        <i class="fas fa-check-circle"></i> Activate
+                                    </button>
+                                    <button class="btn-danger btn-small suspend-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                        <i class="fas fa-lock"></i> Suspend
+                                    </button>
+                                `;
+                            } else if (user.status === 'suspended') {
+                                actionButtons = `
+                                    <button class="btn-success btn-small activate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                        <i class="fas fa-check-circle"></i> Activate
+                                    </button>
+                                    <button class="btn-warning btn-small deactivate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                        <i class="fas fa-ban"></i> Deactivate
+                                    </button>
+                                `;
+                            }
+                            
+                            row.innerHTML = `
+                                <td>${user.employee_id || user._id || 'N/A'}</td>
+                                <td>${user.name || 'N/A'}</td>
+                                <td>${user.email || 'N/A'}</td>
+                                <td>${user.role || 'N/A'}</td>
+                                <td>${getUserStatusBadge(user.status || 'active')}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-primary btn-small view-user-btn" data-id="${user._id}">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        ${actionButtons}
+                                        <button class="btn-danger btn-small delete-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            `;
+                            usersTableBody.appendChild(row);
+                        });
+                        
+                        // Show table
+                        document.getElementById('usersLoading').style.display = 'none';
+                        document.getElementById('usersTable').style.display = 'table';
+                        document.getElementById('usersEmpty').style.display = 'none';
+                    } else {
+                        // Show empty state for filtered results
+                        document.getElementById('usersLoading').style.display = 'none';
+                        document.getElementById('usersEmpty').style.display = 'block';
+                        document.getElementById('usersTable').style.display = 'none';
+                    }
+                } else {
+                    // Show empty state
+                    document.getElementById('usersLoading').style.display = 'none';
+                    document.getElementById('usersEmpty').style.display = 'block';
+                    document.getElementById('usersTable').style.display = 'none';
+                }
+            } else {
+                showToast(data.message || 'Failed to load users', 'error');
+                return;
+            }
+        }
+        
+        // Function to activate a user
+        async function activateUser(userId, userName) {
+            if (!confirm(`Are you sure you want to activate the user "${userName}"?`)) {
                 return;
             }
             
-            const userName = document.getElementById('createUserName').value;
-            const userEmail = document.getElementById('createUserEmail').value;
-            const userPassword = document.getElementById('createUserPassword').value;
-            const userRole = document.getElementById('createUserRole').value;
-            const userDepartment = document.getElementById('createUserDepartment').value;
-            const submitBtn = document.getElementById('submitCreateUserBtn');
-            const submitBtnText = document.getElementById('submitCreateUserBtnText');
-            const submitBtnSpinner = document.getElementById('submitCreateUserBtnSpinner');
-            const formError = document.getElementById('createUserFormError');
-            const formErrorMessage = document.getElementById('createUserFormErrorMessage');
+            if (!currentUser || !authToken) return;
             
-            // Validate
-            if (!userName || !userEmail || !userPassword || !userRole) {
-                formError.style.display = 'block';
-                formErrorMessage.textContent = 'Please fill in all required fields';
-                return;
+            // Find and disable the activate button
+            const activateBtn = document.querySelector(`.activate-user-btn[data-id="${userId}"]`);
+            const originalText = activateBtn ? activateBtn.innerHTML : '';
+            
+            if (activateBtn) {
+                activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating...';
+                activateBtn.disabled = true;
             }
-            
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtnText.textContent = 'Creating...';
-            submitBtnSpinner.classList.remove('hidden');
-            formError.style.display = 'none';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/users`, {
-                    method: 'POST',
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
+                    method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization' : `Bearer ${authToken}`
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        name: userName,
-                        email: userEmail,
-                        password: userPassword,
-                        role: userRole,
-                        department: userDepartment || undefined
+                        status: 'active'
                     })
                 });
                 
-                const data = await response.json();
-
-                // console.log(data);
+                const data = await res.json();
                 
-                
-                if (response.ok) {
-                    showToast('User created successfully!', 'success');
-                    
-                    // Close modal and reset form
-                    document.getElementById('createUserModal').style.display = 'none';
-                    document.getElementById('createUserForm').reset();
-                    
-                    // Refresh users list
+                if (res.ok) {
+                    showToast(`User "${userName}" activated successfully`, 'success');
                     loadUsers();
                 } else {
-                    throw new Error(data.message || 'Failed to create user');
+                    showToast(data.message || 'Failed to activate user', 'error');
+                    // Restore button state on error
+                    if (activateBtn) {
+                        activateBtn.innerHTML = originalText;
+                        activateBtn.disabled = false;
+                    }
                 }
             } catch (error) {
-                formError.style.display = 'block';
-                formErrorMessage.textContent = error.message;
-                showToast(error.message, 'error');
-            } finally {
-                // Reset loading state
-                submitBtn.disabled = false;
-                submitBtnText.textContent = 'Create User';
-                submitBtnSpinner.classList.add('hidden');
-            }
-        }
-        
-        // Function to update worker stats
-        function updateWorkerStats(claims) {
-            const total = claims.length;
-            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
-            const approved = claims.filter(c => c.status === 'approved').length;
-            const rejected = claims.filter(c => c.status === 'rejected').length;
-            const paid = claims.filter(c => c.status === 'paid').length;
-            
-            document.getElementById('workerTotalClaims').textContent = total;
-            document.getElementById('workerPendingClaims').textContent = pending;
-            document.getElementById('workerApprovedClaims').textContent = approved;
-            document.getElementById('workerRejectedClaims').textContent = rejected;
-        }
-        
-        // Function to reset worker stats
-        function resetWorkerStats() {
-            document.getElementById('workerTotalClaims').textContent = '0';
-            document.getElementById('workerPendingClaims').textContent = '0';
-            document.getElementById('workerApprovedClaims').textContent = '0';
-            document.getElementById('workerRejectedClaims').textContent = '0';
-        }
-        
-        // Function to update admin stats
-        function updateAdminStats(claims) {
-            const total = claims.length;
-            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
-            const approved = claims.filter(c => c.status === 'approved').length;
-            const rejected = claims.filter(c => c.status === 'rejected').length;
-            const paid = claims.filter(c => c.status === 'paid').length;
-            
-            document.getElementById('adminTotalClaims').textContent = total;
-            document.getElementById('adminPendingClaims').textContent = pending;
-            document.getElementById('adminApprovedClaims').textContent = approved;
-            document.getElementById('adminRejectedClaims').textContent = rejected;
-        }
-        
-        // Function to reset admin stats
-        function resetAdminStats() {
-            document.getElementById('adminTotalClaims').textContent = '0';
-            document.getElementById('adminPendingClaims').textContent = '0';
-            document.getElementById('adminApprovedClaims').textContent = '0';
-            document.getElementById('adminRejectedClaims').textContent = '0';
-        }
-        
-        // Function to filter users
-        function filterUsers(searchTerm) {
-            const tableBody = document.getElementById('usersTableBody');
-            const rows = tableBody.getElementsByTagName('tr');
-            
-            for (let row of rows) {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm.toLowerCase())) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+                showToast('Failed to activate user. Please try again.', 'error');
+                console.error('Activate user error:', error);
+                // Restore button state on error
+                if (activateBtn) {
+                    activateBtn.innerHTML = originalText;
+                    activateBtn.disabled = false;
                 }
             }
         }
         
-        // Function to handle button clicks in tables
-        document.addEventListener('click', async function(e) {
-            // View claim button
-            if (e.target.classList.contains('view-claim-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                const isAdmin = e.target.getAttribute('data-admin') === 'true';
-                await viewClaimDetails(claimId, isAdmin);
+        // Function to deactivate a user
+        async function deactivateUser(userId, userName) {
+            if (!confirm(`Are you sure you want to deactivate the user "${userName}"?`)) {
+                return;
             }
             
-            // Delete claim button (worker only)
-            if (e.target.classList.contains('delete-claim-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                await deleteClaim(claimId);
+            if (!currentUser || !authToken) return;
+            
+            // Find and disable the deactivate button
+            const deactivateBtn = document.querySelector(`.deactivate-user-btn[data-id="${userId}"]`);
+            const originalText = deactivateBtn ? deactivateBtn.innerHTML : '';
+            
+            if (deactivateBtn) {
+                deactivateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deactivating...';
+                deactivateBtn.disabled = true;
             }
             
-            // Delete claim button (admin)
-            if (e.target.classList.contains('delete-claim-btn-admin')) {
-                const claimId = e.target.getAttribute('data-id');
-                await deleteClaimAdmin(claimId);
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'inactive'
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showToast(`User "${userName}" deactivated successfully`, 'success');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Failed to deactivate user', 'error');
+                    // Restore button state on error
+                    if (deactivateBtn) {
+                        deactivateBtn.innerHTML = originalText;
+                        deactivateBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                showToast('Failed to deactivate user. Please try again.', 'error');
+                console.error('Deactivate user error:', error);
+                // Restore button state on error
+                if (deactivateBtn) {
+                    deactivateBtn.innerHTML = originalText;
+                    deactivateBtn.disabled = false;
+                }
+            }
+        }
+        
+        // Function to suspend a user
+        async function suspendUser(userId, userName) {
+            if (!confirm(`Are you sure you want to suspend the user "${userName}"?`)) {
+                return;
             }
             
-            // Update status button (admin)
-            if (e.target.classList.contains('update-status-btn')) {
-                const claimId = e.target.getAttribute('data-id');
-                await openStatusUpdateModal(claimId);
+            if (!currentUser || !authToken) return;
+            
+            // Find and disable the suspend button
+            const suspendBtn = document.querySelector(`.suspend-user-btn[data-id="${userId}"]`);
+            const originalText = suspendBtn ? suspendBtn.innerHTML : '';
+            
+            if (suspendBtn) {
+                suspendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suspending...';
+                suspendBtn.disabled = true;
             }
-        });
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'suspended'
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showToast(`User "${userName}" suspended successfully`, 'success');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Failed to suspend user', 'error');
+                    // Restore button state on error
+                    if (suspendBtn) {
+                        suspendBtn.innerHTML = originalText;
+                        suspendBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                showToast('Failed to suspend user. Please try again.', 'error');
+                console.error('Suspend user error:', error);
+                // Restore button state on error
+                if (suspendBtn) {
+                    suspendBtn.innerHTML = originalText;
+                    suspendBtn.disabled = false;
+                }
+            }
+        }
+        
+        // Function to delete a user
+        async function deleteUser(userId, userName) {
+            // Prevent deleting the current user
+            if (currentUser && currentUser._id === userId) {
+                showToast('You cannot delete your own account!', 'error');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete the user "${userName}"? This action cannot be undone.`)) {
+                return;
+            }
+            
+            if (!currentUser || !authToken) return;
+            
+            // Find and disable the delete button
+            const deleteBtn = document.querySelector(`.delete-user-btn[data-id="${userId}"]`);
+            const originalText = deleteBtn ? deleteBtn.innerHTML : '';
+            
+            if (deleteBtn) {
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                deleteBtn.disabled = true;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showToast(`User "${userName}" deleted successfully`, 'success');
+                    loadUsers();
+                } else {
+                    showToast(data.message || 'Failed to delete user', 'error');
+                    // Restore button state on error
+                    if (deleteBtn) {
+                        deleteBtn.innerHTML = originalText;
+                        deleteBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                showToast('Failed to delete user. Please try again.', 'error');
+                console.error('Delete user error:', error);
+                // Restore button state on error
+                if (deleteBtn) {
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+            }
+        }
+
+        // Function to view user details
+        async function viewUserDetails(userId) {
+            if (!currentUser || !authToken) return;
+            
+            const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                const user = data.data;
+                let userDetailsHtml = `
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Employee ID</div>
+                        <div class="claim-detail-value">${user.employee_id || 'N/A'}</div>
+                    </div>
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Name</div>
+                        <div class="claim-detail-value">${user.name || 'N/A'}</div>
+                    </div>
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Email</div>
+                        <div class="claim-detail-value">${user.email || 'N/A'}</div>
+                    </div>
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Role</div>
+                        <div class="claim-detail-value">${user.role || 'N/A'}</div>
+                    </div>
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Status</div>
+                        <div class="claim-detail-value">${getUserStatusBadge(user.status || 'active')}</div>
+                    </div>
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Department</div>
+                        <div class="claim-detail-value">${user.department || 'N/A'}</div>
+                    </div>
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Created At</div>
+                        <div class="claim-detail-value">${new Date(user.createdAt).toLocaleDateString('en-GB')}</div>
+                    </div>
+                `;
+                
+                document.getElementById('viewUserDetails').innerHTML = userDetailsHtml;
+                document.getElementById('modalUserTitle').textContent = `User Details: ${user.name || 'N/A'}`;
+                showModal('viewUserModal');
+            } else {
+                showToast(data.message || 'Failed to load user details', 'error');
+            }
+        }
         
         // Function to view claim details
         async function viewClaimDetails(claimId, isAdmin = false) {
@@ -2383,17 +2877,34 @@
             
             // Create details HTML
             let detailsHTML = `
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Claim ID:</strong> ${claim.claim_id || claim.id}</p>
-                    ${claim.user ? `<p><strong>Submitted By:</strong> ${claim.user.name || claim.user.email}</p>` : ''}
-                    <p><strong>Date Submitted:</strong> ${formattedDate}</p>
-                    <p><strong>Status:</strong> ${statusBadge}</p>
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Claim ID</div>
+                    <div class="claim-detail-value">${claim.claim_id || claim.id}</div>
                 </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Category:</strong> ${claim.category || 'Uncategorized'}</p>
-                    <p><strong>Amount:</strong> £${parseFloat(claim.amount || 0).toFixed(2)}</p>
-                    <p><strong>Receipt Available:</strong> ${claim.receipt ? 'Yes' : 'No'}</p>
+                ${claim.user ? `
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Submitted By</div>
+                    <div class="claim-detail-value">${claim.user.name || claim.user.email}</div>
+                </div>` : ''}
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Date Submitted</div>
+                    <div class="claim-detail-value">${formattedDate}</div>
+                </div>
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Status</div>
+                    <div class="claim-detail-value">${statusBadge}</div>
+                </div>
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Category</div>
+                    <div class="claim-detail-value">${claim.category || 'Uncategorized'}</div>
+                </div>
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Amount</div>
+                    <div class="claim-detail-value">£${parseFloat(claim.amount || 0).toFixed(2)}</div>
+                </div>
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Receipt Available</div>
+                    <div class="claim-detail-value">${claim.receipt ? 'Yes' : 'No'}</div>
                 </div>
             `;
             
@@ -2403,9 +2914,9 @@
                 const isPDF = fileExtension === 'pdf';
                 
                 detailsHTML += `
-                    <div style="margin-bottom: 20px;">
-                        <p><strong>Uploaded Document:</strong></p>
-                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Uploaded Document</div>
+                        <div class="claim-detail-value">
                 `;
                 
                 if (isPDF) {
@@ -2417,9 +2928,9 @@
                     `;
                 } else {
                     detailsHTML += `
-                        <img src="${claim.imageUrl}" alt="Receipt" style="max-width: 100%; max-height: 300px; border-radius: 4px; margin-top: 10px;">
+                        <img src="${claim.imageUrl}" alt="Receipt" class="image-preview">
                         <br>
-                        <a href="${claim.imageUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">
+                        <a href="${claim.imageUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 14px; margin-top: 10px; display: inline-block;">
                             <i class="fas fa-external-link-alt" style="margin-right: 5px;"></i> Open full image
                         </a>
                     `;
@@ -2429,9 +2940,9 @@
             }
             
             detailsHTML += `
-                <div style="margin-bottom: 20px;">
-                    <p><strong>Description:</strong></p>
-                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius); margin-bottom: 10px;">
+                <div class="claim-detail-item">
+                    <div class="claim-detail-label">Description</div>
+                    <div class="claim-detail-value" style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
                         ${claim.description || 'No description'}
                     </div>
                 </div>
@@ -2440,9 +2951,9 @@
             // Add notes if available
             if (claim.notes) {
                 detailsHTML += `
-                    <div style="margin-bottom: 20px;">
-                        <p><strong>Notes:</strong></p>
-                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Notes</div>
+                        <div class="claim-detail-value" style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
                             ${claim.notes}
                         </div>
                     </div>
@@ -2454,7 +2965,7 @@
             document.getElementById('modalClaimTitle').textContent = `Claim Details: ${claim.claim_id || claim.id}`;
             
             // Show modal
-            document.getElementById('viewClaimModal').style.display = 'flex';
+            showModal('viewClaimModal');
         }
         
         // Function to delete a claim (worker)
@@ -2462,7 +2973,6 @@
             if (!confirm('Are you sure you want to delete this claim?')) return;
             
             try {
-                
                 const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
                     method: 'DELETE',
                     headers: { 
@@ -2477,10 +2987,8 @@
                 } else {
                     throw new Error('Failed to delete claim');
                 }
-                
             } catch (error) {
                 showToast(error.message, 'error');
-                console.log(error);                
             }
         }
         
@@ -2489,7 +2997,6 @@
             if (!confirm('Are you sure you want to delete this claim? This action cannot be undone.')) return;
             
             try {
-                
                 const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
                     method: 'DELETE',
                     headers: { 
@@ -2508,10 +3015,83 @@
                 } else {
                     throw new Error('Failed to delete claim');
                 }
-                
             } catch (error) {
                 showToast(error.message, 'error');
-                console.log(error);                
+            }
+        }
+        
+        // Function to create a new user
+        async function createUser() {
+            if (!currentUser || !authToken) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            const userName = document.getElementById('createUserName').value;
+            const userEmail = document.getElementById('createUserEmail').value;
+            const userPassword = document.getElementById('createUserPassword').value;
+            const userRole = document.getElementById('createUserRole').value;
+            const userStatus = document.getElementById('createUserStatus').value;
+            const userDepartment = document.getElementById('createUserDepartment').value;
+            const submitBtn = document.getElementById('submitCreateUserBtn');
+            const submitBtnText = document.getElementById('submitCreateUserBtnText');
+            const submitBtnSpinner = document.getElementById('submitCreateUserBtnSpinner');
+            const formError = document.getElementById('createUserFormError');
+            const formErrorMessage = document.getElementById('createUserFormErrorMessage');
+            
+            // Validate
+            if (!userName || !userEmail || !userPassword || !userRole || !userStatus) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = 'Please fill in all required fields';
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtnText.textContent = 'Creating...';
+            submitBtnSpinner.classList.remove('hidden');
+            formError.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization' : `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        name: userName,
+                        email: userEmail,
+                        password: userPassword,
+                        role: userRole,
+                        status: userStatus,
+                        department: userDepartment || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('User created successfully!', 'success');
+                    
+                    // Close modal and reset form
+                    hideModal('createUserModal');
+                    document.getElementById('createUserForm').reset();
+                    
+                    // Refresh users list
+                    loadUsers();
+                } else {
+                    throw new Error(data.message || 'Failed to create user');
+                }
+            } catch (error) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = error.message;
+                showToast(error.message, 'error');
+            } finally {
+                // Reset loading state
+                submitBtn.disabled = false;
+                submitBtnText.textContent = 'Create User';
+                submitBtnSpinner.classList.add('hidden');
             }
         }
         
@@ -2553,7 +3133,7 @@
                         }
                         
                         // Show modal
-                        document.getElementById('updateStatusModal').style.display = 'flex';
+                        showModal('updateStatusModal');
                     } else {
                         showToast('Claim not found', 'error');
                     }
@@ -2591,7 +3171,7 @@
             errorElement.style.display = 'none';
             
             try {
-                const res = await fetch(`${API_BASE_URL}/claims/${currentClaimId}/status`, {
+                const res = await fetch(`${API_BASE_URL}/claims/${currentClaimId}/status/`, {
                     method: "PUT",
                     headers: { 
                         'Authorization': `Bearer ${authToken}`,
@@ -2607,7 +3187,7 @@
 
                 if(data.success){
                     showToast(data.message, 'success');
-                    document.getElementById('updateStatusModal').style.display = 'none';
+                    hideModal('updateStatusModal');
                     resetStatusModal();
                     
                     // Refresh claims
@@ -2630,7 +3210,16 @@
             }
         }
         
-        // Function to reset status modal
+        // Helper Functions
+        
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
         function resetStatusModal() {
             currentClaimId = null;
             document.querySelectorAll('.status-option').forEach(option => {
@@ -2641,22 +3230,148 @@
             document.getElementById('statusUpdateError').style.display = 'none';
         }
         
-        // Function to logout
-        function logout() {
-            localStorage.removeItem('hfa_auth_token');
-            localStorage.removeItem('hfa_user');
-            currentUser = null;
-            authToken = null;
+        function selectStatusOption(optionElement) {
+            // Remove selected class from all options
+            document.querySelectorAll('.status-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
             
-            workerDashboard.classList.add('hidden');
-            adminDashboard.classList.add('hidden');
-            loginPage.classList.remove('hidden');
-            loginForm.reset();
+            // Add selected class to clicked option
+            optionElement.classList.add('selected');
             
-            showToast('You have been logged out.', 'info');
+            // Show notes field for non-pending statuses
+            const status = optionElement.getAttribute('data-status');
+            const notesGroup = document.getElementById('statusNotesGroup');
+            if (status !== 'pending') {
+                notesGroup.style.display = 'block';
+            } else {
+                notesGroup.style.display = 'none';
+            }
         }
         
-        // Function to show toast notifications
+        function resetForm(formId, dateFieldId, referenceNo = null) {
+            const form = document.getElementById(formId);
+            form.reset();
+            document.getElementById(dateFieldId).value = new Date().toISOString().split('T')[0];
+            if (referenceNo && document.getElementById('referenceNo')) {
+                document.getElementById('referenceNo').value = referenceNo;
+            }
+            if (referenceNo && document.getElementById('adminReferenceNo')) {
+                document.getElementById('adminReferenceNo').value = referenceNo;
+            }
+        }
+        
+        function generateReferenceNo() {
+            const prefix = 'HFA';
+            const randomNum = Math.floor(100000 + Math.random() * 900000);
+            return `${prefix}-${randomNum}`;
+        }
+        
+        function showLoadingState(loadingElements, emptyElements, tableElements) {
+            loadingElements.forEach(el => el.style.display = 'block');
+            emptyElements.forEach(el => el.style.display = 'none');
+            tableElements.forEach(el => el.style.display = 'none');
+        }
+        
+        function showTableState(loadingElements, emptyElements, tableElements, hasData) {
+            loadingElements.forEach(el => el.style.display = 'none');
+            if (hasData) {
+                emptyElements.forEach(el => el.style.display = 'none');
+                tableElements.forEach(el => el.style.display = 'table');
+            } else {
+                emptyElements.forEach(el => el.style.display = 'block');
+                tableElements.forEach(el => el.style.display = 'none');
+            }
+        }
+        
+        function updateWorkerStats(claims) {
+            const total = claims.length;
+            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
+            const approved = claims.filter(c => c.status === 'approved').length;
+            const rejected = claims.filter(c => c.status === 'rejected').length;
+            
+            document.getElementById('workerTotalClaims').textContent = total;
+            document.getElementById('workerPendingClaims').textContent = pending;
+            document.getElementById('workerApprovedClaims').textContent = approved;
+            document.getElementById('workerRejectedClaims').textContent = rejected;
+        }
+        
+        function resetWorkerStats() {
+            document.getElementById('workerTotalClaims').textContent = '0';
+            document.getElementById('workerPendingClaims').textContent = '0';
+            document.getElementById('workerApprovedClaims').textContent = '0';
+            document.getElementById('workerRejectedClaims').textContent = '0';
+        }
+        
+        function updateAdminStats(claims) {
+            const total = claims.length;
+            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
+            const approved = claims.filter(c => c.status === 'approved').length;
+            const rejected = claims.filter(c => c.status === 'rejected').length;
+            const paid = claims.filter(c => c.status === 'paid').length;
+            
+            document.getElementById('adminTotalClaims').textContent = total;
+            document.getElementById('adminPendingClaims').textContent = pending;
+            document.getElementById('adminApprovedClaims').textContent = approved;
+            document.getElementById('adminRejectedClaims').textContent = rejected;
+        }
+        
+        function resetAdminStats() {
+            document.getElementById('adminTotalClaims').textContent = '0';
+            document.getElementById('adminPendingClaims').textContent = '0';
+            document.getElementById('adminApprovedClaims').textContent = '0';
+            document.getElementById('adminRejectedClaims').textContent = '0';
+        }
+        
+        function filterUsers(searchTerm) {
+            const searchValue = searchTerm.toLowerCase();
+            const tableBody = document.getElementById('usersTableBody');
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            let hasVisibleRows = false;
+            
+            for (let row of rows) {
+                const cells = row.getElementsByTagName('td');
+                let rowText = '';
+                
+                // Concatenate text from all cells except the actions cell
+                for (let i = 0; i < cells.length - 1; i++) {
+                    rowText += cells[i].textContent.toLowerCase() + ' ';
+                }
+                
+                if (rowText.includes(searchValue)) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+            
+            // Show/hide empty state message
+            const emptyState = document.getElementById('usersEmpty');
+            if (searchTerm && !hasVisibleRows) {
+                emptyState.innerHTML = '<i class="fas fa-search"></i><p>No users match your search</p>';
+                emptyState.style.display = 'block';
+            } else if (!searchTerm && rows.length === 0) {
+                emptyState.innerHTML = '<i class="fas fa-users"></i><p>No users found</p>';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
         function showToast(message, type = "success") {
             // Remove existing toasts
             const existingToasts = document.querySelectorAll('.toast');
@@ -2666,20 +3381,6 @@
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.textContent = message;
-            
-            // Style the toast
-            toast.style.position = 'fixed';
-            toast.style.bottom = '20px';
-            toast.style.right = '20px';
-            toast.style.backgroundColor = type === 'error' ? '#f44336' : 
-                                          type === 'info' ? '#2196f3' : 
-                                          type === 'warning' ? '#ff9800' : '#4CAF50';
-            toast.style.color = 'white';
-            toast.style.padding = '12px 24px';
-            toast.style.borderRadius = '4px';
-            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            toast.style.zIndex = '10000';
-            toast.style.fontWeight = '500';
             
             // Add to document
             document.body.appendChild(toast);
@@ -2692,11 +3393,18 @@
             }, 3000);
         }
         
-        // Helper function to generate reference number
-        function generateReferenceNo() {
-            const prefix = 'HFA';
-            const randomNum = Math.floor(100000 + Math.random() * 900000); // 6 digit random number
-            return `${prefix}-${randomNum}`;
+        function logout() {
+            localStorage.removeItem('hfa_auth_token');
+            localStorage.removeItem('hfa_user');
+            currentUser = null;
+            authToken = null;
+            
+            workerDashboard.classList.add('hidden');
+            adminDashboard.classList.add('hidden');
+            loginPage.classList.remove('hidden');
+            loginForm.reset();
+            
+            showToast('You have been logged out.', 'info');
         }
     </script>
 </body>
