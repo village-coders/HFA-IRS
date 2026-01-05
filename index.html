@@ -296,6 +296,7 @@
             padding: 5px 10px;
             font-size: 14px;
             margin-right: 5px;
+            margin-bottom: 5px;
         }
         
         .btn-success {
@@ -511,6 +512,95 @@
             color: #f44336;
             font-size: 14px;
             margin-top: 5px;
+        }
+        
+        /* File input styling */
+        .form-control[type="file"] {
+            padding: 8px 0;
+            height: auto;
+        }
+        
+        .form-control[type="file"]::-webkit-file-upload-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .form-control[type="file"]::-webkit-file-upload-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        /* Status selector styling */
+        .status-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .status-option {
+            padding: 8px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .status-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .status-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .status-option.pending {
+            border-color: #ff9800;
+            color: #ff9800;
+        }
+        
+        .status-option.pending.selected {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .status-option.approved {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .status-option.approved.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .status-option.rejected {
+            border-color: #f44336;
+            color: #f44336;
+        }
+        
+        .status-option.rejected.selected {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .status-option.paid {
+            border-color: #2196F3;
+            color: #2196F3;
+        }
+        
+        .status-option.paid.selected {
+            background-color: #2196F3;
+            color: white;
         }
         
         @media (max-width: 992px) {
@@ -791,6 +881,16 @@
                                 </div>
                             </div>
                             
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimImage">Upload Receipt/Image</label>
+                                        <input type="file" id="claimImage" class="form-control" accept="image/*,.pdf">
+                                        <small style="color: #666; font-size: 12px;">Upload image or PDF of receipt (optional)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="form-group">
                                 <label for="claimNotes">Additional Notes (Optional)</label>
                                 <textarea id="claimNotes" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
@@ -941,6 +1041,7 @@
                                 <option value="pending">Pending</option>
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
+                                <option value="paid">Paid</option>
                             </select>
                             <button class="btn-primary" id="refreshAdminClaimsBtn">
                                 <i class="fas fa-sync-alt"></i> Refresh
@@ -1041,6 +1142,16 @@
                                 </div>
                             </div>
                             
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimImage">Upload Receipt/Image</label>
+                                        <input type="file" id="adminClaimImage" class="form-control" accept="image/*,.pdf">
+                                        <small style="color: #666; font-size: 12px;">Upload image or PDF of receipt (optional)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div id="adminClaimFormError" class="form-group" style="display: none;">
                                 <div class="error-message" id="adminClaimFormErrorMessage"></div>
                             </div>
@@ -1110,6 +1221,44 @@
             
             <div id="claimDetails">
                 </div>
+        </div>
+    </div>
+    
+    <div id="updateStatusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalStatusTitle">Update Claim Status</h2>
+                <button class="close-btn" id="closeStatusModal">&times;</button>
+            </div>
+            
+            <div id="statusUpdateDetails">
+                <div class="form-group">
+                    <label for="statusSelect">Select Status</label>
+                    <div class="status-selector">
+                        <div class="status-option pending" data-status="pending">Pending</div>
+                        <div class="status-option approved" data-status="approved">Approved</div>
+                        <div class="status-option rejected" data-status="rejected">Rejected</div>
+                        <div class="status-option paid" data-status="paid">Paid</div>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="statusNotesGroup" style="display: none;">
+                    <label for="statusNotes">Status Notes (Optional)</label>
+                    <textarea id="statusNotes" class="form-control" rows="3" placeholder="Add notes about the status change..."></textarea>
+                </div>
+                
+                <div id="statusUpdateError" class="form-group" style="display: none;">
+                    <div class="error-message" id="statusUpdateErrorMessage"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelStatusUpdate">Cancel</button>
+                    <button type="button" class="btn-primary" id="saveStatusUpdate">
+                        <span id="saveStatusUpdateBtnText">Update Status</span>
+                        <span id="saveStatusUpdateBtnSpinner" class="loading-spinner hidden"></span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1202,6 +1351,9 @@
         // Current user data
         let currentUser = null;
         let authToken = null;
+        
+        // Current claim being edited
+        let currentClaimId = null;
         
         // DOM elements
         const loginPage = document.getElementById('loginPage');
@@ -1449,11 +1601,60 @@
                 if (e.target === document.getElementById('createUserModal')) {
                     document.getElementById('createUserModal').style.display = 'none';
                 }
+                if (e.target === document.getElementById('viewUserModal')) {
+                    document.getElementById('viewUserModal').style.display = 'none';
+                }
+                if (e.target === document.getElementById('updateStatusModal')) {
+                    document.getElementById('updateStatusModal').style.display = 'none';
+                }
             });
             
             // Close view claim modal
             document.getElementById('closeViewModal').addEventListener('click', function() {
                 document.getElementById('viewClaimModal').style.display = 'none';
+            });
+            
+            // Close view user modal
+            document.getElementById('closeViewUserModal').addEventListener('click', function() {
+                document.getElementById('viewUserModal').style.display = 'none';
+            });
+            
+            // Close status update modal
+            document.getElementById('closeStatusModal').addEventListener('click', function() {
+                document.getElementById('updateStatusModal').style.display = 'none';
+                resetStatusModal();
+            });
+            
+            document.getElementById('cancelStatusUpdate').addEventListener('click', function() {
+                document.getElementById('updateStatusModal').style.display = 'none';
+                resetStatusModal();
+            });
+            
+            // Status selector events
+            document.querySelectorAll('.status-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    document.querySelectorAll('.status-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Show notes field for non-pending statuses
+                    const status = this.getAttribute('data-status');
+                    const notesGroup = document.getElementById('statusNotesGroup');
+                    if (status !== 'pending') {
+                        notesGroup.style.display = 'block';
+                    } else {
+                        notesGroup.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Save status update
+            document.getElementById('saveStatusUpdate').addEventListener('click', async function() {
+                await updateClaimStatus();
             });
         });
         
@@ -1743,18 +1944,14 @@
                 showToast(data.message || 'Failed to load users', 'error');
                 return;
             }
-            // const loadingElement = document.getElementById('usersLoading');
-            // const emptyElement = document.getElementById('usersEmpty');
-            // const tableElement = document.getElementById('usersTable');
-            // loadingElement.style.display = 'none';
-            // emptyElement.style.display = 'block';
-            // tableElement.style.display = 'none';
-            
-            // showToast('User management requires backend implementation', 'info');
         }
         
         //Function to delete a user
         async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                return;
+            }
+            
             if (!currentUser || !authToken) return;
             
             try {
@@ -1814,12 +2011,6 @@
             }
         }
 
-        document.getElementById('closeViewUserModal').addEventListener('click', function() {
-            document.getElementById('viewUserModal').style.display = 'none';
-            document.getElementById('viewUserDetails').innerHTML = '';
-        });
-        
-        
         // Function to create a claim row
         function createClaimRow(claim, isAdmin = false) {
             const row = document.createElement('tr');
@@ -1850,9 +2041,9 @@
                     ${!isAdmin && (claim.status === 'pending' || claim.status === 'new') ? `
                         <button class="btn-danger btn-small delete-claim-btn" data-id="${claim._id || claim.id}">Delete</button>
                     ` : ''}
-                    ${isAdmin && claim.status === 'pending' ? `
-                        <button class="btn-success btn-small approve-claim-btn" data-id="${claim._id || claim.id}">Approve</button>
-                        <button class="btn-danger btn-small reject-claim-btn" data-id="${claim._id || claim.id}">Reject</button>
+                    ${isAdmin ? `
+                        <button class="btn-info btn-small update-status-btn" data-id="${claim._id || claim.id}">Update Status</button>
+                        <button class="btn-danger btn-small delete-claim-btn-admin" data-id="${claim._id || claim.id}">Delete</button>
                     ` : ''}
                 </td>
             `;
@@ -1884,7 +2075,7 @@
                 return;
             }
             
-            let claimDate, claimCategory, claimDescription, claimAmount, claimNotes, claimReceipt, claimId;
+            let claimDate, claimCategory, claimDescription, claimAmount, claimNotes, claimReceipt, claimId, claimImage;
             let submitBtn, submitBtnText, submitBtnSpinner, formError, formErrorMessage;
             
             if (role === 'worker') {
@@ -1895,6 +2086,7 @@
                 claimAmount = document.getElementById('claimAmount').value;
                 claimNotes = document.getElementById('claimNotes').value;
                 claimReceipt = document.getElementById('claimReceipt').value;
+                claimImage = document.getElementById('claimImage').files[0];
                 submitBtn = document.getElementById('submitClaimBtn');
                 submitBtnText = document.getElementById('submitClaimBtnText');
                 submitBtnSpinner = document.getElementById('submitClaimBtnSpinner');
@@ -1907,6 +2099,7 @@
                 claimDescription = document.getElementById('adminClaimDescription').value;
                 claimAmount = document.getElementById('adminClaimAmount').value;
                 claimReceipt = document.getElementById('adminClaimReceipt').value;
+                claimImage = document.getElementById('adminClaimImage').files[0];
                 claimNotes = '';
                 submitBtn = document.getElementById('submitAdminClaimBtn');
                 submitBtnText = document.getElementById('submitAdminClaimBtnText');
@@ -1929,28 +2122,28 @@
             formError.style.display = 'none';
             
             try {
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('date', claimDate);
+                formData.append('claim_id', claimId);
+                formData.append('category', claimCategory);
+                formData.append('description', claimDescription);
+                formData.append('amount', parseFloat(claimAmount));
+                formData.append('receipt', claimReceipt === 'yes');
+                if (claimNotes) formData.append('notes', claimNotes);
+                if (claimImage) formData.append('image', claimImage);
+                
                 const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
-                        'Content-Type': 'application/json'
+                        // Don't set Content-Type header for FormData, browser will set it with boundary
                     },
-                    body: JSON.stringify({
-                        date: claimDate,
-                        claim_id: claimId,
-                        category: claimCategory,
-                        description: claimDescription,
-                        amount: parseFloat(claimAmount),
-                        receipt: claimReceipt === 'yes',
-                        notes: claimNotes
-                    })
+                    body: formData
                 });
 
-                // console.log(claimId);
-                
-                
                 const data = await response.json();
-                console.log(data);
+                
                 if (response.ok) {
                     showToast('Claim submitted successfully!', 'success');
                     
@@ -1958,10 +2151,12 @@
                     if (role === 'worker') {
                         document.getElementById('newClaimForm').reset();
                         document.getElementById('claimDate').value = new Date().toISOString().split('T')[0];
+                        document.getElementById('referenceNo').value = generateReferenceNo();
                         switchWorkerSection('manageClaimSection', 'Manage Claim Sheet');
                     } else {
                         document.getElementById('adminNewClaimForm').reset();
                         document.getElementById('adminClaimDate').value = new Date().toISOString().split('T')[0];
+                        document.getElementById('adminReferenceNo').value = generateReferenceNo();
                         switchAdminSection('adminManageClaimSection', 'Manage Claims');
                     }
                     
@@ -2068,6 +2263,7 @@
             const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
             const approved = claims.filter(c => c.status === 'approved').length;
             const rejected = claims.filter(c => c.status === 'rejected').length;
+            const paid = claims.filter(c => c.status === 'paid').length;
             
             document.getElementById('workerTotalClaims').textContent = total;
             document.getElementById('workerPendingClaims').textContent = pending;
@@ -2089,6 +2285,7 @@
             const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
             const approved = claims.filter(c => c.status === 'approved').length;
             const rejected = claims.filter(c => c.status === 'rejected').length;
+            const paid = claims.filter(c => c.status === 'paid').length;
             
             document.getElementById('adminTotalClaims').textContent = total;
             document.getElementById('adminPendingClaims').textContent = pending;
@@ -2134,25 +2331,23 @@
                 await deleteClaim(claimId);
             }
             
-            // Approve claim button (admin only)
-            if (e.target.classList.contains('approve-claim-btn')) {
+            // Delete claim button (admin)
+            if (e.target.classList.contains('delete-claim-btn-admin')) {
                 const claimId = e.target.getAttribute('data-id');
-                await updateClaimStatus(claimId, 'approve');
+                await deleteClaimAdmin(claimId);
             }
             
-            // Reject claim button (admin only)
-            if (e.target.classList.contains('reject-claim-btn')) {
+            // Update status button (admin)
+            if (e.target.classList.contains('update-status-btn')) {
                 const claimId = e.target.getAttribute('data-id');
-                await updateClaimStatus(claimId, 'reject');
+                await openStatusUpdateModal(claimId);
             }
         });
         
         // Function to view claim details
         async function viewClaimDetails(claimId, isAdmin = false) {
             try {
-                // We use the existing loaded data if possible, or fetch it
-                // Since we don't store claims globally, we'll fetch all again
-                const response = await fetch(`${API_BASE_URL}/claims`, {
+                const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -2162,8 +2357,7 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    const claim = data.data.find(c => c._id === claimId || c.id === claimId);
-                    // console.log(data);
+                    const claim = data.data;
                     
                     if (claim) {
                         displayClaimModal(claim, isAdmin);
@@ -2201,7 +2395,40 @@
                     <p><strong>Amount:</strong> £${parseFloat(claim.amount || 0).toFixed(2)}</p>
                     <p><strong>Receipt Available:</strong> ${claim.receipt ? 'Yes' : 'No'}</p>
                 </div>
+            `;
+            
+            // Add image if available
+            if (claim.imageUrl) {
+                const fileExtension = claim.imageUrl.split('.').pop().toLowerCase();
+                const isPDF = fileExtension === 'pdf';
                 
+                detailsHTML += `
+                    <div style="margin-bottom: 20px;">
+                        <p><strong>Uploaded Document:</strong></p>
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
+                `;
+                
+                if (isPDF) {
+                    detailsHTML += `
+                        <p><i class="fas fa-file-pdf" style="color: #e74c3c; margin-right: 8px;"></i> 
+                        <a href="${claim.imageUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+                            View PDF Receipt
+                        </a></p>
+                    `;
+                } else {
+                    detailsHTML += `
+                        <img src="${claim.imageUrl}" alt="Receipt" style="max-width: 100%; max-height: 300px; border-radius: 4px; margin-top: 10px;">
+                        <br>
+                        <a href="${claim.imageUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">
+                            <i class="fas fa-external-link-alt" style="margin-right: 5px;"></i> Open full image
+                        </a>
+                    `;
+                }
+                
+                detailsHTML += `</div></div>`;
+            }
+            
+            detailsHTML += `
                 <div style="margin-bottom: 20px;">
                     <p><strong>Description:</strong></p>
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius); margin-bottom: 10px;">
@@ -2230,7 +2457,7 @@
             document.getElementById('viewClaimModal').style.display = 'flex';
         }
         
-        // Function to delete a claim
+        // Function to delete a claim (worker)
         async function deleteClaim(claimId) {
             if (!confirm('Are you sure you want to delete this claim?')) return;
             
@@ -2243,8 +2470,6 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
-
                 
                 if (response.ok) {
                     showToast('Claim deleted successfully!', 'success');
@@ -2259,35 +2484,161 @@
             }
         }
         
-        // Function to update claim status
-        async function updateClaimStatus(claimId, status) {
+        // Function to delete a claim (admin - can delete any claim)
+        async function deleteClaimAdmin(claimId) {
+            if (!confirm('Are you sure you want to delete this claim? This action cannot be undone.')) return;
+            
             try {
-                const res = await fetch(`${API_BASE_URL}/claims/${claimId}/${status}`, {
-                    method: "PUT",
+                
+                const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
+                    method: 'DELETE',
                     headers: { 
                         'Authorization': `Bearer ${authToken}`,
                         'Content-Type': 'application/json'
                     }
-                })
-
-
-                const data = await res.json()
-
-                // console.log(data);
-
-                if(data.success){
-                    showToast(data.message,'success')
-                    loadWorkerClaims()
-                    loadAdminClaims()
-                }else{
-                    showToast(data.message, 'error')
+                });
+                
+                if (response.ok) {
+                    showToast('Claim deleted successfully!', 'success');
+                    loadAdminClaims();
+                    // Also refresh worker dashboard if it's open
+                    if (!workerDashboard.classList.contains('hidden')) {
+                        loadWorkerClaims();
+                    }
+                } else {
+                    throw new Error('Failed to delete claim');
                 }
-                
-                
                 
             } catch (error) {
                 showToast(error.message, 'error');
+                console.log(error);                
             }
+        }
+        
+        // Function to open status update modal
+        async function openStatusUpdateModal(claimId) {
+            currentClaimId = claimId;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const claim = data.data;
+                    
+                    if (claim) {
+                        document.getElementById('modalStatusTitle').textContent = `Update Status for Claim: ${claim.claim_id || claim.id}`;
+                        
+                        // Set current status as selected
+                        const statusOptions = document.querySelectorAll('.status-option');
+                        statusOptions.forEach(option => {
+                            option.classList.remove('selected');
+                            if (option.getAttribute('data-status') === claim.status) {
+                                option.classList.add('selected');
+                            }
+                        });
+                        
+                        // Show/hide notes field based on current status
+                        const notesGroup = document.getElementById('statusNotesGroup');
+                        if (claim.status !== 'pending') {
+                            notesGroup.style.display = 'block';
+                        } else {
+                            notesGroup.style.display = 'none';
+                        }
+                        
+                        // Show modal
+                        document.getElementById('updateStatusModal').style.display = 'flex';
+                    } else {
+                        showToast('Claim not found', 'error');
+                    }
+                } else {
+                    throw new Error('Failed to load claim details');
+                }
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Function to update claim status (new method with status selection)
+        async function updateClaimStatus() {
+            if (!currentClaimId) return;
+            
+            const selectedStatusOption = document.querySelector('.status-option.selected');
+            if (!selectedStatusOption) {
+                document.getElementById('statusUpdateError').style.display = 'block';
+                document.getElementById('statusUpdateErrorMessage').textContent = 'Please select a status';
+                return;
+            }
+            
+            const newStatus = selectedStatusOption.getAttribute('data-status');
+            const statusNotes = document.getElementById('statusNotes').value;
+            
+            // Show loading state
+            const saveBtn = document.getElementById('saveStatusUpdate');
+            const saveBtnText = document.getElementById('saveStatusUpdateBtnText');
+            const saveBtnSpinner = document.getElementById('saveStatusUpdateBtnSpinner');
+            const errorElement = document.getElementById('statusUpdateError');
+            
+            saveBtn.disabled = true;
+            saveBtnText.textContent = 'Updating...';
+            saveBtnSpinner.classList.remove('hidden');
+            errorElement.style.display = 'none';
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/claims/${currentClaimId}/status`, {
+                    method: "PUT",
+                    headers: { 
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: newStatus,
+                        notes: statusNotes || undefined
+                    })
+                });
+
+                const data = await res.json();
+
+                if(data.success){
+                    showToast(data.message, 'success');
+                    document.getElementById('updateStatusModal').style.display = 'none';
+                    resetStatusModal();
+                    
+                    // Refresh claims
+                    loadAdminClaims();
+                    if (!workerDashboard.classList.contains('hidden')) {
+                        loadWorkerClaims();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to update status');
+                }
+                
+            } catch (error) {
+                errorElement.style.display = 'block';
+                document.getElementById('statusUpdateErrorMessage').textContent = error.message;
+                showToast(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtnText.textContent = 'Update Status';
+                saveBtnSpinner.classList.add('hidden');
+            }
+        }
+        
+        // Function to reset status modal
+        function resetStatusModal() {
+            currentClaimId = null;
+            document.querySelectorAll('.status-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('statusNotes').value = '';
+            document.getElementById('statusNotesGroup').style.display = 'none';
+            document.getElementById('statusUpdateError').style.display = 'none';
         }
         
         // Function to logout
@@ -2339,6 +2690,13 @@
                 toast.style.transition = 'opacity 0.3s';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+        
+        // Helper function to generate reference number
+        function generateReferenceNo() {
+            const prefix = 'HFA';
+            const randomNum = Math.floor(100000 + Math.random() * 900000); // 6 digit random number
+            return `${prefix}-${randomNum}`;
         }
     </script>
 </body>
