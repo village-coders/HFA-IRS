@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFRS - Claims Management Dashboard</title>
+    <title>Isleworth Deen - Claims Management Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -1204,7 +1204,7 @@
     <div id="loginPage" class="login-container">
         <div class="login-box">
             <div class="logo">
-                <h1>IFRS Claims</h1>
+                <h1>Isleworth Deen Claims</h1>
                 <p>Management Dashboard</p>
             </div>
             
@@ -1242,7 +1242,7 @@
         </button>
         <div class="sidebar" id="workerSidebar">
             <div class="sidebar-header">
-                <h2>IFRS Claims</h2>
+                <h2>Isleworth Deen Claims</h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Worker Dashboard</p>
             </div>
             
@@ -1685,7 +1685,7 @@
         </button>
         <div class="sidebar" id="adminSidebar">
             <div class="sidebar-header">
-                <h2>IFRS Claims</h2>
+                <h2>Isleworth Deen Claims</h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Admin Dashboard</p>
             </div>
             
@@ -1758,6 +1758,16 @@
                     <div class="stat-content">
                         <h3 id="adminRejectedClaims">0</h3>
                         <p>Rejected Claims</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #00336630; color: #003366;">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="adminPaidClaims">0</h3>
+                        <p>Paid Claims</p>
                     </div>
                 </div>
             </div>
@@ -4360,6 +4370,7 @@
             document.getElementById('adminPendingClaims').textContent = pending;
             document.getElementById('adminApprovedClaims').textContent = approved;
             document.getElementById('adminRejectedClaims').textContent = rejected;
+            document.getElementById('adminPaidClaims').textContent = paid;
         }
         
         function resetAdminStats() {
