@@ -207,6 +207,7 @@
             margin-left: 250px;
             padding: 30px;
             transition: margin-left 0.3s ease;
+            width: 100%;
         }
         
         .header {
@@ -878,6 +879,12 @@
         @media (max-width: 768px) {
             .stats-cards {
                 grid-template-columns: 1fr;
+                width: 100%;
+            }
+
+            .card{
+                overflow: auto !important;
+                width: 100% !important;
             }
             
             .form-row {
@@ -891,11 +898,7 @@
             
             .main-content {
                 padding: 20px;
-            }
-
-            .card{
-                overflow: auto !important;
-                max-width: 780px;
+                width: 100%;
             }
             
             .card-header {
@@ -989,13 +992,17 @@
 
             .card{
                 overflow: auto !important;
-                max-width: 480px;
+                width: 400px;
             }
             
+            .stat-cards {
+                width: 400px;
+            }
+
             .stat-card {
                 flex-direction: column;
                 text-align: center;
-                /* max-width: 200px; */
+                width: 100%;
             }
             
             .stat-icon {
