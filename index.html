@@ -2134,6 +2134,7 @@
             
             // Initialize totals calculation
             calculateTotals();
+            calculateAdminTotals();
             
             // Check for saved token
             const savedToken = localStorage.getItem('hfa_auth_token');
@@ -2251,10 +2252,27 @@
                 resetNewClaimForm();
             });
             
-            // Amount calculation listeners
-            document.getElementById('cashAmount').addEventListener('input', calculateTotals);
-            document.getElementById('bankTransferAmount').addEventListener('input', calculateTotals);
-            document.getElementById('vatAmount').addEventListener('input', calculateTotals);
+            // Amount calculation listeners for worker form
+            document.getElementById('cashAmount').addEventListener('input', function() {
+                calculateTotals();
+            });
+            document.getElementById('bankTransferAmount').addEventListener('input', function() {
+                calculateTotals();
+            });
+            document.getElementById('vatAmount').addEventListener('input', function() {
+                calculateTotals();
+            });
+            
+            // Amount calculation listeners for admin form
+            document.getElementById('adminCashAmount').addEventListener('input', function() {
+                calculateAdminTotals();
+            });
+            document.getElementById('adminBankTransferAmount').addEventListener('input', function() {
+                calculateAdminTotals();
+            });
+            document.getElementById('adminVatAmount').addEventListener('input', function() {
+                calculateAdminTotals();
+            });
             
             // Admin dashboard events
             document.getElementById('adminLogout').addEventListener('click', function(e) {
@@ -2342,6 +2360,8 @@
             const dropdownItems = document.querySelectorAll('.dropdown-item');
             const dropdownText = document.getElementById('dropdownText');
             
+            if (!dropdownBtn || !dropdownContent) return;
+            
             // Toggle dropdown
             dropdownBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -2424,20 +2444,20 @@
             });
             
             // Close buttons
-            document.getElementById('closeViewModal').addEventListener('click', function() {
+            document.getElementById('closeViewModal')?.addEventListener('click', function() {
                 hideModal('viewClaimModal');
             });
             
-            document.getElementById('closeViewUserModal').addEventListener('click', function() {
+            document.getElementById('closeViewUserModal')?.addEventListener('click', function() {
                 hideModal('viewUserModal');
             });
             
-            document.getElementById('closeStatusModal').addEventListener('click', function() {
+            document.getElementById('closeStatusModal')?.addEventListener('click', function() {
                 hideModal('updateStatusModal');
                 resetStatusModal();
             });
             
-            document.getElementById('cancelStatusUpdate').addEventListener('click', function() {
+            document.getElementById('cancelStatusUpdate')?.addEventListener('click', function() {
                 hideModal('updateStatusModal');
                 resetStatusModal();
             });
@@ -2449,7 +2469,7 @@
             workerDashboard.classList.remove('hidden');
             
             // Update user info
-            document.getElementById('workerUserName').textContent = currentUser.name || currentUser.email;
+            document.getElementById('workerUserName').textContent = currentUser.name.charAt(0).toUpperCase() + currentUser.name.slice(1)|| currentUser.email;
             document.getElementById('workerUserId').textContent = `Worker ID: ${currentUser.id || 'N/A'}`;
             
             // Update claimant name
@@ -2465,7 +2485,7 @@
             adminDashboard.classList.remove('hidden');
             
             // Update user info
-            document.getElementById('adminUserName').textContent = currentUser.name || currentUser.email;
+            document.getElementById('adminUserName').textContent = currentUser.name.charAt(0).toUpperCase() + currentUser.name.slice(1) || currentUser.email;
             
             // Update claimant name
             document.getElementById('adminClaimantName').value = currentUser.name || currentUser.email || 'Admin';
@@ -2501,7 +2521,10 @@
                 sectionElement.classList.add('active');
             }
             
-            document.getElementById(`${role}PageTitle`).textContent = pageTitle;
+            const pageTitleElement = document.getElementById(`${role}PageTitle`);
+            if (pageTitleElement) {
+                pageTitleElement.textContent = pageTitle;
+            }
         }
         
         // Function to load worker claims
@@ -2535,6 +2558,7 @@
                 }
                 
                 const data = await response.json();
+                console.log(data);
                 
                 if (response.ok) {
                     // Clear tables
@@ -2544,8 +2568,10 @@
                     if (data.data && data.data.length > 0) {
                         // Filter to only show current user's claims for worker
                         const userClaims = data.data.filter(claim => 
-                            claim.user && claim.user._id === currentUser._id
+                            claim.user_id && claim.user_id.id === currentUser._id
                         );
+
+                        
                         
                         // Update stats with user's claims only
                         updateWorkerStats(userClaims);
@@ -2686,8 +2712,8 @@
             
             // Get user info for admin view
             let userInfo = '';
-            if (isAdmin && (claim.user_name || claim.employee_id || claim.user)) {
-                const userName = claim.user_name || (claim.user ? claim.user.name || claim.user.email : 'Unknown');
+            if (isAdmin && (claim.claimant_name || claim.employee_id || claim.user_name)) {
+                const userName = claim.claimant_name || (claim.user_name ? claim.user_name || claim?.user?.email : 'Unknown');
                 const userId = claim.employee_id || (claim.user ? claim.user.employee_id : 'N/A');
                 userInfo = `${userName} <span class="user-badge">${userId}</span>`;
             }
@@ -2883,26 +2909,38 @@
             }
         }
         
-        // Function to calculate totals for expense table
-        function calculateTotals(formType = 'worker') {
-            
-            // const prefix = formType === 'worker' ? '' : 'admin';
-            // const cash = parseFloat(document.getElementById(`${prefix}cashAmount`).value) || 0;
-            // const bankTransfer = parseFloat(document.getElementById(`${prefix}bankTransferAmount`).value) || 0;
-            // const vat = parseFloat(document.getElementById(`${prefix}vatAmount`).value) || 0;
-            // const total = cash + bankTransfer + vat;
+        // Function to calculate totals for worker expense table
+        function calculateTotals() {
+            const cash = parseFloat(document.getElementById('cashAmount').value) || 0;
+            const bankTransfer = parseFloat(document.getElementById('bankTransferAmount').value) || 0;
+            const vat = parseFloat(document.getElementById('vatAmount').value) || 0;
+            const total = cash + bankTransfer + vat;
             
             // Update total field
-            // document.getElementById(`${prefix}TotalAmount`).value = total.toFixed(2);
-            
-
+            document.getElementById('workerTotalAmount').value = total.toFixed(2);
             
             // Update subtotal row
-            // document.getElementById(`${prefix}SubTotalCash`).textContent = cash.toFixed(2);
-            // document.getElementById(`${prefix}SubTotalBank`).textContent = bankTransfer.toFixed(2);
-            // document.getElementById(`${prefix}SubTotalVat`).textContent = vat.toFixed(2);
-            // document.getElementById(`${prefix}SubTotalTotal`).textContent = total.toFixed(2);
-
+            document.getElementById('workerSubTotalCash').textContent = cash.toFixed(2);
+            document.getElementById('workerSubTotalBank').textContent = bankTransfer.toFixed(2);
+            document.getElementById('workerSubTotalVat').textContent = vat.toFixed(2);
+            document.getElementById('workerSubTotalTotal').textContent = total.toFixed(2);
+        }
+        
+        // Function to calculate totals for admin expense table
+        function calculateAdminTotals() {
+            const cash = parseFloat(document.getElementById('adminCashAmount').value) || 0;
+            const bankTransfer = parseFloat(document.getElementById('adminBankTransferAmount').value) || 0;
+            const vat = parseFloat(document.getElementById('adminVatAmount').value) || 0;
+            const total = cash + bankTransfer + vat;
+            
+            // Update total field
+            document.getElementById('adminTotalAmount').value = total.toFixed(2);
+            
+            // Update subtotal row
+            document.getElementById('adminSubTotalCash').textContent = cash.toFixed(2);
+            document.getElementById('adminSubTotalBank').textContent = bankTransfer.toFixed(2);
+            document.getElementById('adminSubTotalVat').textContent = vat.toFixed(2);
+            document.getElementById('adminSubTotalTotal').textContent = total.toFixed(2);
         }
         
         // Function to reset the new claim form
@@ -2915,7 +2953,6 @@
             document.getElementById('claimDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('expenseType').value = 'None';
             document.getElementById('expenseDescription').value = '';
-            document.getElementById('otherInfo').checked = true;
             document.getElementById('currency').value = 'None';
             document.getElementById('creditCard').checked = true;
             document.getElementById('cashAmount').value = '0.00';
@@ -2948,18 +2985,21 @@
             document.getElementById('adminClaimDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('adminExpenseType').value = 'None';
             document.getElementById('adminExpenseDescription').value = '';
-            document.getElementById('adminTotalAmount').value = '';
-            document.getElementById('adminClaimReceipt').value = 'yes';
+            document.getElementById('adminCurrency').value = 'None';
+            document.getElementById('adminCreditCard').checked = true;
+            document.getElementById('adminCashAmount').value = '0.00';
+            document.getElementById('adminBankTransferAmount').value = '0.00';
+            document.getElementById('adminVatAmount').value = '0.00';
+            document.getElementById('adminTotalAmount').value = '0.00';
             document.getElementById('adminReason').value = '';
             document.getElementById('adminClaimNotes').value = '';
             document.getElementById('adminClaimImage').value = '';
 
-
+            // Reset subtotal row
             document.getElementById('adminSubTotalCash').textContent = '00.00';
             document.getElementById('adminSubTotalBank').textContent = '00.00';
             document.getElementById('adminSubTotalVat').textContent = '00.00';
             document.getElementById('adminSubTotalTotal').textContent = '00.00';
-            
             
             // Update reference number
             document.getElementById('adminClaimReferenceNo').textContent = generateReferenceNo();
@@ -2977,7 +3017,7 @@
             let claimDate, claimType, description, amount, notes, image, reason;
             let submitBtn, submitBtnText, submitBtnSpinner, formError, formErrorMessage;
             let claimantName, companyName, contactPerson, contactEmail;
-            let expenseType, expenseDesc, otherInfo, currency, creditCard;
+            let expenseType, expenseDesc, currency, creditCard;
             let cashAmount, bankTransferAmount, vatAmount, totalAmount;
             
             if (role === 'worker') {
@@ -3000,7 +3040,6 @@
                 notes = document.getElementById('claimNotes').value;
                 image = document.getElementById('claimImage').files[0];
                 
-
                 amount = totalAmount;
                 
                 submitBtn = document.getElementById('submitClaimBtn');
@@ -3015,8 +3054,7 @@
                 companyName = document.getElementById('adminCompanyName').value;
                 contactPerson = document.getElementById('adminContactPerson').value;
                 contactEmail = document.getElementById('adminContactEmail').value;
-                description = document.getElementById('adminExpenseDescription').value;
-                amount = parseFloat(document.getElementById('adminTotalAmount').value) || 0;
+                expenseDesc = document.getElementById('adminExpenseDescription').value;
                 reason = document.getElementById('adminReason').value;
                 notes = document.getElementById('adminClaimNotes').value;
                 image = document.getElementById('adminClaimImage').files[0];
@@ -3024,13 +3062,14 @@
                 
                 // Set default values for other fields
                 expenseType = document.getElementById("adminExpenseType").value || 'None';
-                expenseDesc = description;
+                description = expenseDesc;
 
                 currency = document.getElementById('adminCurrency').value;
                 
                 cashAmount = parseFloat(document.getElementById('adminCashAmount').value) || 0;
                 bankTransferAmount = parseFloat(document.getElementById('adminBankTransferAmount').value) || 0;
                 vatAmount = parseFloat(document.getElementById('adminVatAmount').value) || 0;
+                totalAmount = parseFloat(document.getElementById('adminTotalAmount').value) || 0;
                 
                 amount = totalAmount;
                 
@@ -3266,7 +3305,7 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE_URL}/users/${userId}/activate`, {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -3319,7 +3358,7 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE_URL}/users/${userId}/deactivate`, {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -3564,10 +3603,10 @@
                     <div class="claim-detail-label">Claim ID</div>
                     <div class="claim-detail-value">${claim.claim_id || claim.id}</div>
                 </div>
-                ${claim.user ? `
+                ${claim.claimant_name ? `
                 <div class="claim-detail-item">
                     <div class="claim-detail-label">Submitted By</div>
-                    <div class="claim-detail-value">${claim.user.name || claim.user.email}</div>
+                    <div class="claim-detail-value">${claim.claimant_name || claim.user.email}</div>
                 </div>` : ''}
                 <div class="claim-detail-item">
                     <div class="claim-detail-label">Date Submitted</div>
@@ -3611,8 +3650,8 @@
             }
             
             // Add image if available
-            if (claim.imageUrl) {
-                const fileExtension = claim.imageUrl.split('.').pop().toLowerCase();
+            if (claim.receipt_url) {
+                const fileExtension = claim.receipt_url.split('.').pop().toLowerCase();
                 const isPDF = fileExtension === 'pdf';
                 
                 detailsHTML += `
@@ -3624,15 +3663,15 @@
                 if (isPDF) {
                     detailsHTML += `
                         <p><i class="fas fa-file-pdf" style="color: #e74c3c; margin-right: 8px;"></i> 
-                        <a href="${claim.imageUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+                        <a href="${claim.receipt_url}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
                             View PDF Receipt
                         </a></p>
                     `;
                 } else {
                     detailsHTML += `
-                        <img src="${claim.imageUrl}" alt="Receipt" class="image-preview">
+                        <img src="${claim.receipt_url}" alt="Receipt" class="image-preview">
                         <br>
-                        <a href="${claim.imageUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 14px; margin-top: 10px; display: inline-block;">
+                        <a href="${claim.receipt_url}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 14px; margin-top: 10px; display: inline-block;">
                             <i class="fas fa-external-link-alt" style="margin-right: 5px;"></i> Open full image
                         </a>
                     `;
@@ -3643,9 +3682,9 @@
             
             detailsHTML += `
                 <div class="claim-detail-item">
-                    <div class="claim-detail-label">Description</div>
+                    <div class="claim-detail-label">Expense Description</div>
                     <div class="claim-detail-value" style="background-color: #f8f9fa; padding: 15px; border-radius: var(--border-radius);">
-                        ${claim.description || 'No description'}
+                        ${claim.expense_description || 'No description'}
                     </div>
                 </div>
             `;
@@ -3675,19 +3714,21 @@
             if (!confirm('Are you sure you want to delete this claim?')) return;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/claims/${claimId}`, {
+                const response = await fetch(`${API_BASE_URL}/claims/${claimId}/delete`, {
                     method: 'DELETE',
                     headers: { 
                         'Authorization': `Bearer ${authToken}`,
                         'Content-Type': 'application/json'
                     }
                 });
+
+                const data = response.json()
                 
                 if (response.ok) {
                     showToast('Claim deleted successfully!', 'success');
                     loadWorkerClaims();
                 } else {
-                    throw new Error('Failed to delete claim');
+                    throw new Error(data.message);
                 }
             } catch (error) {
                 showToast(error.message, 'error');
@@ -3706,6 +3747,8 @@
                         'Content-Type': 'application/json'
                     }
                 });
+
+                const data = await response.json()
                 
                 if (response.ok) {
                     showToast('Claim deleted successfully!', 'success');
@@ -3715,7 +3758,7 @@
                         loadWorkerClaims();
                     }
                 } else {
-                    throw new Error('Failed to delete claim');
+                    throw new Error(data.message);
                 }
             } catch (error) {
                 showToast(error.message, 'error');
@@ -3915,11 +3958,17 @@
         // Helper Functions
         
         function showModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+            }
         }
         
         function hideModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
         
         function resetStatusModal() {
@@ -3958,19 +4007,35 @@
         }
         
         function showLoadingState(loadingElements, emptyElements, tableElements) {
-            loadingElements.forEach(el => el.style.display = 'block');
-            emptyElements.forEach(el => el.style.display = 'none');
-            tableElements.forEach(el => el.style.display = 'none');
+            loadingElements.forEach(el => {
+                if (el) el.style.display = 'block';
+            });
+            emptyElements.forEach(el => {
+                if (el) el.style.display = 'none';
+            });
+            tableElements.forEach(el => {
+                if (el) el.style.display = 'none';
+            });
         }
         
         function showTableState(loadingElements, emptyElements, tableElements, hasData) {
-            loadingElements.forEach(el => el.style.display = 'none');
+            loadingElements.forEach(el => {
+                if (el) el.style.display = 'none';
+            });
             if (hasData) {
-                emptyElements.forEach(el => el.style.display = 'none');
-                tableElements.forEach(el => el.style.display = 'table');
+                emptyElements.forEach(el => {
+                    if (el) el.style.display = 'none';
+                });
+                tableElements.forEach(el => {
+                    if (el) el.style.display = 'table';
+                });
             } else {
-                emptyElements.forEach(el => el.style.display = 'block');
-                tableElements.forEach(el => el.style.display = 'none');
+                emptyElements.forEach(el => {
+                    if (el) el.style.display = 'block';
+                });
+                tableElements.forEach(el => {
+                    if (el) el.style.display = 'none';
+                });
             }
         }
         
