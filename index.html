@@ -1317,6 +1317,17 @@
                         <p>Rejected Claims</p>
                     </div>
                 </div>
+
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #ffebee; color: #c62828;">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="workerPaidClaims">0</h3>
+                        <p>Paid Claims</p>
+                    </div>
+                </div>
             </div>
             
             <div id="manageClaimSection" class="section active">
@@ -1335,6 +1346,10 @@
                                     <div class="dropdown-item active" data-filter="all">
                                         <i class="fas fa-list"></i>
                                         All My Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="new">
+                                        <i class="fas fa-clock"></i>
+                                        Submitted Claims
                                     </div>
                                     <div class="dropdown-item" data-filter="pending">
                                         <i class="fas fa-clock"></i>
@@ -1441,14 +1456,14 @@
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="companyName">Company Name</label>
-                                        <input type="text" id="companyName" class="form-control">
+                                        <input type="text" id="companyName" class="form-control" required>
                                     </div>
                                 </div>
                                 
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="contactPerson">Contact Person</label>
-                                        <input type="text" id="contactPerson" class="form-control">
+                                        <input type="text" id="contactPerson" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1457,7 +1472,7 @@
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="contactEmail">Contact E-Mail</label>
-                                        <input type="email" id="contactEmail" class="form-control">
+                                        <input type="email" id="contactEmail" class="form-control" required>
                                     </div>
                                 </div>
                                 
@@ -1487,7 +1502,7 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <select id="expenseType" class="form-control" style="min-width: 100px;">
+                                                <select id="expenseType" class="form-control" style="min-width: 100px;" required>
                                                     <option value="None">None</option>
                                                     <option value="Expense">Expense</option>
                                                     <option value="Service">Service</option>
@@ -1495,7 +1510,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select id="expenseDescription" class="form-control" style="min-width: 150px;">
+                                                <select id="expenseDescription" class="form-control" style="min-width: 150px;" required>
                                                     <option value="">...Select Option...</option>
                                                     <option value="Travel">Travel</option>
                                                     <option value="Accommodation">Accommodation</option>
@@ -1505,7 +1520,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select id="currency" class="form-control" style="min-width: 100px;">
+                                                <select id="currency" class="form-control" style="min-width: 100px;" required>
                                                     <option value="None">None</option>
                                                     <option value="GBP">GBP</option>
                                                     <option value="USD">USD</option>
@@ -1870,14 +1885,14 @@
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="adminCompanyName">Company Name</label>
-                                        <input type="text" id="adminCompanyName" class="form-control">
+                                        <input type="text" id="adminCompanyName" class="form-control" required>
                                     </div>
                                 </div>
                                 
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="adminContactPerson">Contact Person</label>
-                                        <input type="text" id="adminContactPerson" class="form-control">
+                                        <input type="text" id="adminContactPerson" class="form-control" required>
                                     </div>
                                 </div>
                             </div>
@@ -1886,7 +1901,7 @@
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="adminContactEmail">Contact E-Mail</label>
-                                        <input type="email" id="adminContactEmail" class="form-control">
+                                        <input type="email" id="adminContactEmail" class="form-control" required>
                                     </div>
                                 </div>
                                 
@@ -1917,7 +1932,7 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <select id="adminExpenseType" class="form-control" style="min-width: 100px;">
+                                                <select id="adminExpenseType" class="form-control" style="min-width: 100px;" required>
                                                     <option value="None">None</option>
                                                     <option value="Expense">Expense</option>
                                                     <option value="Service">Service</option>
@@ -1925,7 +1940,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select id="adminExpenseDescription" class="form-control" style="min-width: 150px;">
+                                                <select id="adminExpenseDescription" class="form-control" style="min-width: 150px;" required>
                                                     <option value="">...Select Option...</option>
                                                     <option value="Travel">Travel</option>
                                                     <option value="Accommodation">Accommodation</option>
@@ -1935,7 +1950,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select id="adminCurrency" class="form-control" style="min-width: 100px;">
+                                                <select id="adminCurrency" class="form-control" style="min-width: 100px;" required>
                                                     <option value="None">None</option>
                                                     <option value="GBP">GBP</option>
                                                     <option value="USD">USD</option>
@@ -2921,7 +2936,7 @@
                             case 'submitted':
                                 // Submitted claims are typically new or pending
                                 filteredClaims = data.data.filter(claim => 
-                                    claim.status === 'new' || claim.status === 'pending' || claim.status === 'submitted'
+                                    claim.status === 'new' || claim.status === 'submitted'
                                 );
                                 break;
                             case 'approved':
@@ -3246,8 +3261,6 @@
             
             // Update reference number
             document.getElementById('claimReferenceNo').textContent = generateReferenceNo();
-            
-            showToast('Form has been reset.', 'info');
         }
         
         // Function to reset the admin claim form
@@ -4319,11 +4332,14 @@
             const pending = claims.filter(c => c.status === 'pending' || c.status === 'new' || c.status === 'submitted').length;
             const approved = claims.filter(c => c.status === 'approved').length;
             const rejected = claims.filter(c => c.status === 'rejected').length;
+            const paid = claims.filter(c => c.status === 'paid').length;
+
             
             document.getElementById('workerTotalClaims').textContent = total;
             document.getElementById('workerPendingClaims').textContent = pending;
             document.getElementById('workerApprovedClaims').textContent = approved;
             document.getElementById('workerRejectedClaims').textContent = rejected;
+            document.getElementById('workerPaidClaims').textContent = paid;
         }
         
         function resetWorkerStats() {
