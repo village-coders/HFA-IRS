@@ -2088,8 +2088,8 @@
 
     <script>
         // API Configuration
-        const API_BASE_URL = 'https://hfa-internal-record-system.onrender.com/api';
-        // const API_BASE_URL = 'http://localhost:500/api';
+        // const API_BASE_URL = 'https://hfa-internal-record-system.onrender.com/api';
+        const API_BASE_URL = 'http://localhost:500/api';
         
         // Current user data
         let currentUser = null;
@@ -2886,22 +2886,22 @@
         // Function to calculate totals for expense table
         function calculateTotals(formType = 'worker') {
             
-            const prefix = formType === 'worker' ? '' : 'admin';
-            const cash = parseFloat(document.getElementById(`${prefix}cashAmount`).value) || 0;
-            const bankTransfer = parseFloat(document.getElementById(`${prefix}bankTransferAmount`).value) || 0;
-            const vat = parseFloat(document.getElementById(`${prefix}vatAmount`).value) || 0;
-            const total = cash + bankTransfer + vat;
+            // const prefix = formType === 'worker' ? '' : 'admin';
+            // const cash = parseFloat(document.getElementById(`${prefix}cashAmount`).value) || 0;
+            // const bankTransfer = parseFloat(document.getElementById(`${prefix}bankTransferAmount`).value) || 0;
+            // const vat = parseFloat(document.getElementById(`${prefix}vatAmount`).value) || 0;
+            // const total = cash + bankTransfer + vat;
             
             // Update total field
-            document.getElementById(`${prefix}TotalAmount`).value = total.toFixed(2);
+            // document.getElementById(`${prefix}TotalAmount`).value = total.toFixed(2);
             
 
             
             // Update subtotal row
-            document.getElementById(`${prefix}SubTotalCash`).textContent = cash.toFixed(2);
-            document.getElementById(`${prefix}SubTotalBank`).textContent = bankTransfer.toFixed(2);
-            document.getElementById(`${prefix}SubTotalVat`).textContent = vat.toFixed(2);
-            document.getElementById(`${prefix}SubTotalTotal`).textContent = total.toFixed(2);
+            // document.getElementById(`${prefix}SubTotalCash`).textContent = cash.toFixed(2);
+            // document.getElementById(`${prefix}SubTotalBank`).textContent = bankTransfer.toFixed(2);
+            // document.getElementById(`${prefix}SubTotalVat`).textContent = vat.toFixed(2);
+            // document.getElementById(`${prefix}SubTotalTotal`).textContent = total.toFixed(2);
 
         }
         
