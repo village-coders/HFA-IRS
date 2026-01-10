@@ -241,6 +241,7 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--shadow);
+            width: 100%;
             display: flex;
             align-items: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -279,6 +280,7 @@
             box-shadow: var(--shadow);
             padding: 25px;
             margin-bottom: 30px;
+            width: 100%;
             transition: box-shadow 0.3s ease;
         }
         
@@ -890,6 +892,11 @@
             .main-content {
                 padding: 20px;
             }
+
+            .card{
+                overflow: auto !important;
+                max-width: 780px;
+            }
             
             .card-header {
                 flex-direction: column;
@@ -938,6 +945,27 @@
                 border-radius: var(--border-radius);
                 margin-top: 5px;
             }
+            
+            /* Mobile table styling */
+            table {
+                min-width: 600px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-buttons .btn-small {
+                width: 100%;
+                justify-content: center;
+                margin-right: 0;
+            }
+            
+            .status-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
         }
         
         @media (max-width: 576px) {
@@ -958,15 +986,55 @@
             .header h1 {
                 font-size: 24px;
             }
+
+            .card{
+                overflow: auto !important;
+                max-width: 480px;
+            }
             
             .stat-card {
                 flex-direction: column;
                 text-align: center;
+                /* max-width: 200px; */
             }
             
             .stat-icon {
                 margin-right: 0;
                 margin-bottom: 15px;
+            }
+            
+            table {
+                min-width: 500px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .filter-controls .dropdown,
+            .filter-controls .btn-primary {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            table {
+                min-width: 400px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+            
+            .card {
+                padding: 15px;
             }
         }
         
@@ -1249,6 +1317,36 @@
                     <div class="card-header">
                         <h2>My Claims</h2>
                         <div class="filter-controls">
+                            <!-- Filter dropdown for worker claims -->
+                            <div class="dropdown" id="workerClaimsDropdown">
+                                <button class="dropdown-btn" id="workerDropdownBtn">
+                                    <i class="fas fa-filter"></i>
+                                    <span id="workerDropdownText">All My Claims</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="dropdown-content" id="workerDropdownContent">
+                                    <div class="dropdown-item active" data-filter="all">
+                                        <i class="fas fa-list"></i>
+                                        All My Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="pending">
+                                        <i class="fas fa-clock"></i>
+                                        Pending Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="approved">
+                                        <i class="fas fa-check-circle"></i>
+                                        Approved Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="rejected">
+                                        <i class="fas fa-times-circle"></i>
+                                        Rejected Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="paid">
+                                        <i class="fas fa-pound-sign"></i>
+                                        Paid Claims
+                                    </div>
+                                </div>
+                            </div>
                             <button class="btn-primary" id="refreshClaimsBtn">
                                 <i class="fas fa-sync-alt"></i> Refresh
                             </button>
@@ -1491,9 +1589,41 @@
                 <div class="card">
                     <div class="card-header">
                         <h2>All My Claims</h2>
-                        <button class="btn-primary" id="refreshMyClaimsBtn">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
+                        <div class="filter-controls">
+                            <!-- Filter dropdown for my claims -->
+                            <div class="dropdown" id="myClaimsDropdown">
+                                <button class="dropdown-btn" id="myClaimsDropdownBtn">
+                                    <i class="fas fa-filter"></i>
+                                    <span id="myClaimsDropdownText">All My Claims</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="dropdown-content" id="myClaimsDropdownContent">
+                                    <div class="dropdown-item active" data-filter="all">
+                                        <i class="fas fa-list"></i>
+                                        All My Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="pending">
+                                        <i class="fas fa-clock"></i>
+                                        Pending Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="approved">
+                                        <i class="fas fa-check-circle"></i>
+                                        Approved Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="rejected">
+                                        <i class="fas fa-times-circle"></i>
+                                        Rejected Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="paid">
+                                        <i class="fas fa-pound-sign"></i>
+                                        Paid Claims
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-primary" id="refreshMyClaimsBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="table-container">
@@ -2098,8 +2228,12 @@
         // Current claim being edited
         let currentClaimId = null;
         
-        // Current claims filter
-        let currentFilter = 'submitted';
+        // Current claims filter for worker
+        let workerCurrentFilter = 'all';
+        let myClaimsCurrentFilter = 'all';
+        
+        // Current claims filter for admin
+        let adminCurrentFilter = 'submitted';
         
         // DOM elements
         const loginPage = document.getElementById('loginPage');
@@ -2320,8 +2454,14 @@
                 await createUser();
             });
             
-            // Claims dropdown functionality
-            setupClaimsDropdown();
+            // Claims dropdown functionality - Worker
+            setupWorkerClaimsDropdown();
+            
+            // Claims dropdown functionality - My Claims
+            setupMyClaimsDropdown();
+            
+            // Claims dropdown functionality - Admin
+            setupAdminClaimsDropdown();
             
             // Filter status for users
             document.getElementById('userStatusFilter').addEventListener('change', function() {
@@ -2354,10 +2494,112 @@
             });
         }
         
-        function setupClaimsDropdown() {
+        function setupWorkerClaimsDropdown() {
+            const dropdownBtn = document.getElementById('workerDropdownBtn');
+            const dropdownContent = document.getElementById('workerDropdownContent');
+            const dropdownItems = document.querySelectorAll('#workerDropdownContent .dropdown-item');
+            const dropdownText = document.getElementById('workerDropdownText');
+            
+            if (!dropdownBtn || !dropdownContent) return;
+            
+            // Toggle dropdown
+            dropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+            });
+            
+            // Handle dropdown item selection
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items
+                    dropdownItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to selected item
+                    this.classList.add('active');
+                    
+                    // Update dropdown text
+                    const filterText = this.textContent.trim();
+                    dropdownText.textContent = filterText;
+                    
+                    // Set current filter
+                    workerCurrentFilter = this.getAttribute('data-filter');
+                    
+                    // Close dropdown
+                    dropdownContent.classList.remove('show');
+                    
+                    // Load claims with new filter
+                    loadWorkerClaims();
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdownContent.classList.remove('show');
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            dropdownContent.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+        
+        function setupMyClaimsDropdown() {
+            const dropdownBtn = document.getElementById('myClaimsDropdownBtn');
+            const dropdownContent = document.getElementById('myClaimsDropdownContent');
+            const dropdownItems = document.querySelectorAll('#myClaimsDropdownContent .dropdown-item');
+            const dropdownText = document.getElementById('myClaimsDropdownText');
+            
+            if (!dropdownBtn || !dropdownContent) return;
+            
+            // Toggle dropdown
+            dropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+            });
+            
+            // Handle dropdown item selection
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items
+                    dropdownItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to selected item
+                    this.classList.add('active');
+                    
+                    // Update dropdown text
+                    const filterText = this.textContent.trim();
+                    dropdownText.textContent = filterText;
+                    
+                    // Set current filter
+                    myClaimsCurrentFilter = this.getAttribute('data-filter');
+                    
+                    // Close dropdown
+                    dropdownContent.classList.remove('show');
+                    
+                    // Load claims with new filter
+                    loadWorkerClaims();
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdownContent.classList.remove('show');
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            dropdownContent.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+        
+        function setupAdminClaimsDropdown() {
             const dropdownBtn = document.getElementById('dropdownBtn');
             const dropdownContent = document.getElementById('dropdownContent');
-            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            const dropdownItems = document.querySelectorAll('#dropdownContent .dropdown-item');
             const dropdownText = document.getElementById('dropdownText');
             
             if (!dropdownBtn || !dropdownContent) return;
@@ -2384,7 +2626,7 @@
                     dropdownText.textContent = filterText;
                     
                     // Set current filter
-                    currentFilter = this.getAttribute('data-filter');
+                    adminCurrentFilter = this.getAttribute('data-filter');
                     
                     // Close dropdown
                     dropdownContent.classList.remove('show');
@@ -2469,7 +2711,7 @@
             workerDashboard.classList.remove('hidden');
             
             // Update user info
-            document.getElementById('workerUserName').textContent = currentUser.name.charAt(0).toUpperCase() + currentUser.name.slice(1)|| currentUser.email;
+            document.getElementById('workerUserName').textContent = currentUser.name.charAt(0).toUpperCase() + currentUser.name.slice(1) || currentUser.email;
             document.getElementById('workerUserId').textContent = `Worker ID: ${currentUser.id || 'N/A'}`;
             
             // Update claimant name
@@ -2558,7 +2800,6 @@
                 }
                 
                 const data = await response.json();
-                console.log(data);
                 
                 if (response.ok) {
                     // Clear tables
@@ -2571,23 +2812,50 @@
                             claim.user_id && claim.user_id.id === currentUser._id
                         );
 
-                        
-                        
                         // Update stats with user's claims only
                         updateWorkerStats(userClaims);
                         
                         if (userClaims.length > 0) {
-                            // Populate tables
-                            userClaims.forEach(claim => {
-                                const row = createClaimRow(claim, false);
-                                tableBody.appendChild(row.cloneNode(true));
-                                myClaimsTableBody.appendChild(row);
-                            });
+                            // Filter claims based on current filter for manage claim section
+                            let filteredWorkerClaims = userClaims;
+                            if (workerCurrentFilter !== 'all') {
+                                filteredWorkerClaims = userClaims.filter(claim => 
+                                    claim.status === workerCurrentFilter
+                                );
+                            }
                             
-                            // Show tables
-                            showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], true);
+                            // Filter claims based on current filter for my claims section
+                            let filteredMyClaims = userClaims;
+                            if (myClaimsCurrentFilter !== 'all') {
+                                filteredMyClaims = userClaims.filter(claim => 
+                                    claim.status === myClaimsCurrentFilter
+                                );
+                            }
+                            
+                            // Populate manage claim table
+                            if (filteredWorkerClaims.length > 0) {
+                                filteredWorkerClaims.forEach(claim => {
+                                    const row = createClaimRow(claim, false);
+                                    tableBody.appendChild(row.cloneNode(true));
+                                });
+                                showTableState([loadingElement], [emptyElement], [tableElement], true);
+                            } else {
+                                showTableState([loadingElement], [emptyElement], [tableElement], false);
+                            }
+                            
+                            // Populate my claims table
+                            if (filteredMyClaims.length > 0) {
+                                filteredMyClaims.forEach(claim => {
+                                    const row = createClaimRow(claim, false);
+                                    myClaimsTableBody.appendChild(row);
+                                });
+                                showTableState([myClaimsLoadingElement], [myClaimsEmptyElement], [myClaimsTableElement], true);
+                            } else {
+                                showTableState([myClaimsLoadingElement], [myClaimsEmptyElement], [myClaimsTableElement], false);
+                            }
+                            
                         } else {
-                            // Show empty state
+                            // Show empty state for both tables
                             showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], false);
                             resetWorkerStats();
                         }
@@ -2642,7 +2910,7 @@
                         // Filter claims based on current filter
                         let filteredClaims = data.data;
                         
-                        switch(currentFilter) {
+                        switch(adminCurrentFilter) {
                             case 'submitted':
                                 // Submitted claims are typically new or pending
                                 filteredClaims = data.data.filter(claim => 
