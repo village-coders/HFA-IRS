@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HFA - Claims Management Dashboard</title>
+    <title>IFRS - Claims Management Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -329,10 +329,16 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
         }
         
         .btn-success {
             background-color: var(--accent-color);
+            color: white;
         }
         
         .btn-success:hover {
@@ -341,6 +347,7 @@
         
         .btn-warning {
             background-color: var(--warning-color);
+            color: white;
         }
         
         .btn-warning:hover {
@@ -349,6 +356,7 @@
         
         .btn-danger {
             background-color: var(--danger-color);
+            color: white;
         }
         
         .btn-danger:hover {
@@ -357,6 +365,7 @@
         
         .btn-info {
             background-color: #17a2b8;
+            color: white;
         }
         
         .btn-info:hover {
@@ -761,6 +770,73 @@
             z-index: 101;
         }
         
+        /* Dropdown styling */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .dropdown-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+            animation: dropdownFade 0.2s ease;
+        }
+        
+        @keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dropdown-item {
+            color: var(--dark-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.active {
+            background-color: #e9ecef;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
         /* Responsive Design */
         @media (max-width: 1200px) {
             .stats-cards {
@@ -844,6 +920,24 @@
             .table-container {
                 border: none;
             }
+            
+            .dropdown {
+                width: 100%;
+            }
+            
+            .dropdown-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .dropdown-content {
+                width: 100%;
+                position: static;
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius);
+                margin-top: 5px;
+            }
         }
         
         @media (max-width: 576px) {
@@ -871,7 +965,7 @@
             }
             
             .stat-icon {
-                margin-right = 0;
+                margin-right: 0;
                 margin-bottom: 15px;
             }
         }
@@ -948,13 +1042,94 @@
             background-color: #fff3cd;
             color: #856404;
         }
+        
+        /* New claim form specific styles */
+        .claim-reference {
+            text-align: right;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 16px;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .expense-table-container {
+            margin: 30px 0;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .expense-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        .expense-table th {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .expense-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .expense-table tfoot tr {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .expense-table tfoot td {
+            padding: 12px;
+            border-top: 2px solid var(--border-color);
+        }
+        
+        .checkbox-cell {
+            text-align: center;
+        }
+        
+        .checkbox-cell input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+        
+        .amount-input {
+            text-align: right;
+        }
+        
+        .amount-input input {
+            text-align: right;
+            font-family: monospace;
+        }
+        
+        .reason-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .reason-section label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
     <div id="loginPage" class="login-container">
         <div class="login-box">
             <div class="logo">
-                <h1>HFA Claims</h1>
+                <h1>IFRS Claims</h1>
                 <p>Management Dashboard</p>
             </div>
             
@@ -992,7 +1167,7 @@
         </button>
         <div class="sidebar" id="workerSidebar">
             <div class="sidebar-header">
-                <h2>HFA Claims</h2>
+                <h2>IFRS Claims</h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Worker Dashboard</p>
             </div>
             
@@ -1120,61 +1295,172 @@
                     </div>
                     
                     <div class="card-body">
+                        <div class="claim-reference">
+                            Claim Reference No: <span id="claimReferenceNo">MDOS-003078579709</span>
+                        </div>
+                        
                         <form id="newClaimForm">
                             <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimantName">Claimant Name *</label>
+                                        <input type="text" id="claimantName" class="form-control" value="Test" readonly disabled required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="claimType">Claim Type *</label>
+                                        <select id="claimType" class="form-control" required>
+                                            <option value="">...Select Type...</option>
+                                            <option value="Audit">Audit</option>
+                                            <option value="Supervision">Supervision</option>
+                                            <option value="Audit / Supervision">Audit / Supervision</option>
+                                            <option value="Payment Request Form">Payment Request Form</option>
+                                            <option value="Meeting">Meeting</option>
+                                            <option value="Miscellaneous">Miscellaneous</option>
+                                            <option value="Approved Supplier IT (Yearly)">Approved Supplier IT (Yearly)</option>
+                                            <option value="Approved Supplier Admin (Yearly)">Approved Supplier Admin (Yearly)</option>
+                                            <option value="Approved Supplier IT (Monthly)">Approved Supplier IT (Monthly)</option>
+                                            <option value="Approved Supplier Admin (Monthly)">Approved Supplier Admin (Monthly)</option>
+                                            <option value="Approved Supplier Training (Yearly)">Approved Supplier Training (Yearly)</option>
+                                            <option value="Approved Supplier Training (Monthly)">Approved Supplier Training (Monthly)</option>
+                                            <option value="Approved Supplier Advertisement (Yearly)">Approved Supplier Advertisement (Yearly)</option>
+                                            <option value="Approved Supplier Advertisement (Monthly)">Approved Supplier Advertisement (Monthly)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="companyName">Company Name</label>
+                                        <input type="text" id="companyName" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="contactPerson">Contact Person</label>
+                                        <input type="text" id="contactPerson" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="contactEmail">Contact E-Mail</label>
+                                        <input type="email" id="contactEmail" class="form-control">
+                                    </div>
+                                </div>
+                                
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="claimDate">Date *</label>
                                         <input type="date" id="claimDate" class="form-control" required>
                                     </div>
                                 </div>
-
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="referenceNo">Reference No *</label>
-                                        <input type="text" id="referenceNo" class="form-control" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="claimCategory">Category *</label>
-                                        <select id="claimCategory" class="form-control" required>
-                                            <option value="">Select Category</option>
-                                            <option value="Office Supplies">Office Supplies</option>
-                                            <option value="Furniture Repair">Furniture Repair</option>
-                                            <option value="Equipment">Equipment</option>
-                                            <option value="Travel">Travel</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
                             
+                            <!-- Expense Table -->
+                            <div class="expense-table-container">
+                                <table class="expense-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type:</th>
+                                            <th>Description:</th>
+                                            <th>Currency:</th>
+                                            <th>C.Card:</th>
+                                            <th>Cash:</th>
+                                            <th>Bank Transferred:</th>
+                                            <th>Vat:</th>
+                                            <th>Total:</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <select id="expenseType" class="form-control" style="min-width: 100px;">
+                                                    <option value="None">None</option>
+                                                    <option value="Expense">Expense</option>
+                                                    <option value="Service">Service</option>
+                                                    <option value="Material">Material</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select id="expenseDescription" class="form-control" style="min-width: 150px;">
+                                                    <option value="">...Select Option...</option>
+                                                    <option value="Travel">Travel</option>
+                                                    <option value="Accommodation">Accommodation</option>
+                                                    <option value="Meals">Meals</option>
+                                                    <option value="Equipment">Equipment</option>
+                                                    <option value="Software">Software</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select id="currency" class="form-control" style="min-width: 100px;">
+                                                    <option value="None">None</option>
+                                                    <option value="GBP">GBP</option>
+                                                    <option value="USD">USD</option>
+                                                    <option value="EUR">EUR</option>
+                                                </select>
+                                            </td>
+                                            <td class="checkbox-cell">
+                                                <input type="checkbox" id="creditCard" checked>
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="cashAmount" class="form-control" value="0.00" step="0.01" min="0">
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="bankTransferAmount" class="form-control" value="0.00" step="0.01" min="0">
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="vatAmount" class="form-control" value="0.00" step="0.01" min="0">
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="workerTotalAmount" class="form-control" value="0.00" step="0.01" min="0" readonly style="background-color: #f0f0f0;">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4">Sub Total:</td>
+                                            <td id="workerSubTotalCash">00.00</td>
+                                            <td id="workerSubTotalBank">00.00</td>
+                                            <td id="workerSubTotalVat">00.00</td>
+                                            <td id="workerSubTotalTotal">00.00</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <!-- Reason Section -->
+                            <div class="reason-section">
+                                <label for="reason">Reason:</label>
+                                <select id="reason" class="form-control" required>
+                                    <option value="">...Select Option...</option>
+                                    <option value="Overseas Travel">Overseas Travel</option>
+                                    <option value="Training">Training</option>
+                                    <option value="Other Authorised">Other Authorised</option>
+                                    <option value="Event">Event</option>
+                                    <option value="Seminar/Conference">Seminar/Conference</option>
+                                    <option value="Office Expense">Office Expense</option>
+                                    <option value="Meeting">Meeting</option>
+                                    <option value="Telephone Expense">Telephone Expense</option>
+                                    <option value="External Invoices">External Invoices</option>
+                                    <option value="Telephone Claim">Telephone Claim</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Additional Notes -->
                             <div class="form-group">
-                                <label for="claimDescription">Description *</label>
-                                <textarea id="claimDescription" class="form-control" rows="3" placeholder="Describe what you fixed or purchased for the company..." required></textarea>
+                                <label for="claimNotes">Additional Notes (Optional)</label>
+                                <textarea id="claimNotes" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
                             </div>
                             
-                            <div class="form-row">
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="claimAmount">Amount (£) *</label>
-                                        <input type="number" id="claimAmount" class="form-control" min="0" step="0.01" placeholder="0.00" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="claimReceipt">Receipt Available?</label>
-                                        <select id="claimReceipt" class="form-control">
-                                            <option value="yes">Yes</option>
-                                            <option value="no">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
+                            <!-- Receipt Upload -->
                             <div class="form-row">
                                 <div class="form-col">
                                     <div class="form-group">
@@ -1183,11 +1469,6 @@
                                         <small style="color: #666; font-size: 12px;">Upload image or PDF of receipt (optional)</small>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="claimNotes">Additional Notes (Optional)</label>
-                                <textarea id="claimNotes" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
                             </div>
                             
                             <div id="claimFormError" class="form-group" style="display: none;">
@@ -1252,7 +1533,7 @@
         </button>
         <div class="sidebar" id="adminSidebar">
             <div class="sidebar-header">
-                <h2>HFA Claims</h2>
+                <h2>IFRS Claims</h2>
                 <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Admin Dashboard</p>
             </div>
             
@@ -1334,13 +1615,40 @@
                     <div class="card-header">
                         <h2>All Claims</h2>
                         <div class="filter-controls">
-                            <select id="filterStatus" class="form-control">
-                                <option value="all">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                                <option value="paid">Paid</option>
-                            </select>
+                            <!-- Dropdown for claim types -->
+                            <div class="dropdown" id="claimsDropdown">
+                                <button class="dropdown-btn" id="dropdownBtn">
+                                    <i class="fas fa-filter"></i>
+                                    <span id="dropdownText">Submitted Claims</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div class="dropdown-content" id="dropdownContent">
+                                    <div class="dropdown-item active" data-filter="submitted">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Submitted Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="approved">
+                                        <i class="fas fa-check-circle"></i>
+                                        Approved Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="paid">
+                                        <i class="fas fa-pound-sign"></i>
+                                        Paid Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="all">
+                                        <i class="fas fa-list"></i>
+                                        All Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="pending">
+                                        <i class="fas fa-clock"></i>
+                                        Pending Claims
+                                    </div>
+                                    <div class="dropdown-item" data-filter="rejected">
+                                        <i class="fas fa-times-circle"></i>
+                                        Rejected Claims
+                                    </div>
+                                </div>
+                            </div>
                             <button class="btn-primary" id="refreshAdminClaimsBtn">
                                 <i class="fas fa-sync-alt"></i> Refresh
                             </button>
@@ -1383,63 +1691,174 @@
                         <h2>Submit New Claim (Admin)</h2>
                         <button class="btn-secondary" id="cancelAdminNewClaimBtn">Cancel</button>
                     </div>
-                    
                     <div class="card-body">
+                        <div class="claim-reference">
+                            Claim Reference No: <span id="adminClaimReferenceNo">MDOS-003078579709</span>
+                        </div>
+                        
                         <form id="adminNewClaimForm">
                             <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimantName">Claimant Name *</label>
+                                        <input type="text" id="adminClaimantName" class="form-control" value="Admin" disabled required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminClaimType">Claim Type *</label>
+                                        <select id="adminClaimType" class="form-control" required>
+                                            <option value="">Select Type</option>
+                                            <option value="Audit">Audit</option>
+                                            <option value="Supervision">Supervision</option>
+                                            <option value="Audit / Supervision">Audit / Supervision</option>
+                                            <option value="Payment Request Form">Payment Request Form</option>
+                                            <option value="Meeting">Meeting</option>
+                                            <option value="Miscellaneous">Miscellaneous</option>
+                                            <option value="Approved Supplier IT (Yearly)">Approved Supplier IT (Yearly)</option>
+                                            <option value="Approved Supplier Admin (Yearly)">Approved Supplier Admin (Yearly)</option>
+                                            <option value="Approved Supplier IT (Monthly)">Approved Supplier IT (Monthly)</option>
+                                            <option value="Approved Supplier Admin (Monthly)">Approved Supplier Admin (Monthly)</option>
+                                            <option value="Approved Supplier Training (Yearly)">Approved Supplier Training (Yearly)</option>
+                                            <option value="Approved Supplier Training (Monthly)">Approved Supplier Training (Monthly)</option>
+                                            <option value="Approved Supplier Advertisement (Yearly)">Approved Supplier Advertisement (Yearly)</option>
+                                            <option value="Approved Supplier Advertisement (Monthly)">Approved Supplier Advertisement (Monthly)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminCompanyName">Company Name</label>
+                                        <input type="text" id="adminCompanyName" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminContactPerson">Contact Person</label>
+                                        <input type="text" id="adminContactPerson" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="adminContactEmail">Contact E-Mail</label>
+                                        <input type="email" id="adminContactEmail" class="form-control">
+                                    </div>
+                                </div>
+                                
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="adminClaimDate">Date *</label>
                                         <input type="date" id="adminClaimDate" class="form-control" required>
                                     </div>
                                 </div>
-
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="adminReferenceNo">Reference No *</label>
-                                        <input type="text" id="adminReferenceNo" class="form-control" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="adminClaimCategory">Category *</label>
-                                        <select id="adminClaimCategory" class="form-control" required>
-                                            <option value="">Select Category</option>
-                                            <option value="Office Supplies">Office Supplies</option>
-                                            <option value="Furniture Repair">Furniture Repair</option>
-                                            <option value="Equipment">Equipment</option>
-                                            <option value="Travel">Travel</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
                             
+                            <!-- Simplified Expense Section for Admin -->
+                            <!-- Expense Table -->
+                            <div class="expense-table-container">
+                                <table class="expense-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Type:</th>
+                                            <th>Description:</th>
+                                            <th>Currency:</th>
+                                            <th>C.Card:</th>
+                                            <th>Cash:</th>
+                                            <th>Bank Transferred:</th>
+                                            <th>Vat:</th>
+                                            <th>Total:</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <select id="adminExpenseType" class="form-control" style="min-width: 100px;">
+                                                    <option value="None">None</option>
+                                                    <option value="Expense">Expense</option>
+                                                    <option value="Service">Service</option>
+                                                    <option value="Material">Material</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select id="adminExpenseDescription" class="form-control" style="min-width: 150px;">
+                                                    <option value="">...Select Option...</option>
+                                                    <option value="Travel">Travel</option>
+                                                    <option value="Accommodation">Accommodation</option>
+                                                    <option value="Meals">Meals</option>
+                                                    <option value="Equipment">Equipment</option>
+                                                    <option value="Software">Software</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select id="adminCurrency" class="form-control" style="min-width: 100px;">
+                                                    <option value="None">None</option>
+                                                    <option value="GBP">GBP</option>
+                                                    <option value="USD">USD</option>
+                                                    <option value="EUR">EUR</option>
+                                                </select>
+                                            </td>
+                                            <td class="checkbox-cell">
+                                                <input type="checkbox" id="adminCreditCard" checked>
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="adminCashAmount" class="form-control" value="0.00" step="0.01" min="0">
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="adminBankTransferAmount" class="form-control" value="0.00" step="0.01" min="0">
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="adminVatAmount" class="form-control" value="0.00" step="0.01" min="0">
+                                            </td>
+                                            <td class="amount-input">
+                                                <input type="number" id="adminTotalAmount" class="form-control" value="0.00" step="0.01" min="0" readonly style="background-color: #f0f0f0;">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4">Sub Total:</td>
+                                            <td id="adminSubTotalCash">00.00</td>
+                                            <td id="adminSubTotalBank">00.00</td>
+                                            <td id="adminSubTotalVat">00.00</td>
+                                            <td id="adminSubTotalTotal">00.00</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <!-- Reason Section -->
+                            <div class="reason-section">
+                                <label for="adminReason">Reason:</label>
+                                <select id="adminReason" class="form-control" required>
+                                    <option value="">...Select Option...</option>
+                                    <option value="Overseas Travel">Overseas Travel</option>
+                                    <option value="Training">Training</option>
+                                    <option value="Other Authorised">Other Authorised</option>
+                                    <option value="Event">Event</option>
+                                    <option value="Seminar/Conference">Seminar/Conference</option>
+                                    <option value="Office Expense">Office Expense</option>
+                                    <option value="Meeting">Meeting</option>
+                                    <option value="Telephone Expense">Telephone Expense</option>
+                                    <option value="External Invoices">External Invoices</option>
+                                    <option value="Telephone Claim">Telephone Claim</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Additional Notes -->
                             <div class="form-group">
-                                <label for="adminClaimDescription">Description *</label>
-                                <textarea id="adminClaimDescription" class="form-control" rows="3" placeholder="Describe what you fixed or purchased for the company..." required></textarea>
+                                <label for="adminClaimNotes">Additional Notes (Optional)</label>
+                                <textarea id="adminClaimNotes" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
                             </div>
                             
-                            <div class="form-row">
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="adminClaimAmount">Amount (£) *</label>
-                                        <input type="number" id="adminClaimAmount" class="form-control" min="0" step="0.01" placeholder="0.00" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-col">
-                                    <div class="form-group">
-                                        <label for="adminClaimReceipt">Receipt Available?</label>
-                                        <select id="adminClaimReceipt" class="form-control">
-                                            <option value="yes">Yes</option>
-                                            <option value="no">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
+                            <!-- Receipt Upload -->
                             <div class="form-row">
                                 <div class="form-col">
                                     <div class="form-group">
@@ -1669,7 +2088,8 @@
 
     <script>
         // API Configuration
-        const API_BASE_URL = 'https://hfa-internal-record-system.onrender.com/api';
+        // const API_BASE_URL = 'https://hfa-internal-record-system.onrender.com/api';
+        const API_BASE_URL = 'http://localhost:500/api';
         
         // Current user data
         let currentUser = null;
@@ -1677,6 +2097,9 @@
         
         // Current claim being edited
         let currentClaimId = null;
+        
+        // Current claims filter
+        let currentFilter = 'submitted';
         
         // DOM elements
         const loginPage = document.getElementById('loginPage');
@@ -1699,9 +2122,18 @@
             document.getElementById('claimDate').value = today;            
             document.getElementById('adminClaimDate').value = today;
 
+            // Set claimant name based on current user if available
+            if (currentUser) {
+                document.getElementById('claimantName').value = currentUser.name || currentUser.email || 'Test';
+                document.getElementById('adminClaimantName').value = currentUser.name || currentUser.email || 'Admin';
+            }
+            
             // Generate initial reference numbers
-            document.getElementById('referenceNo').value = generateReferenceNo();
-            document.getElementById('adminReferenceNo').value = generateReferenceNo();
+            document.getElementById('claimReferenceNo').textContent = generateReferenceNo();
+            document.getElementById('adminClaimReferenceNo').textContent = generateReferenceNo();
+            
+            // Initialize totals calculation
+            calculateTotals();
             
             // Check for saved token
             const savedToken = localStorage.getItem('hfa_auth_token');
@@ -1816,8 +2248,13 @@
             });
             
             document.getElementById('resetClaimForm').addEventListener('click', function() {
-                resetForm('newClaimForm', 'claimDate', generateReferenceNo());
+                resetNewClaimForm();
             });
+            
+            // Amount calculation listeners
+            document.getElementById('cashAmount').addEventListener('input', calculateTotals);
+            document.getElementById('bankTransferAmount').addEventListener('input', calculateTotals);
+            document.getElementById('vatAmount').addEventListener('input', calculateTotals);
             
             // Admin dashboard events
             document.getElementById('adminLogout').addEventListener('click', function(e) {
@@ -1834,7 +2271,7 @@
             });
             
             document.getElementById('resetAdminClaimForm').addEventListener('click', function() {
-                resetForm('adminNewClaimForm', 'adminClaimDate', generateReferenceNo());
+                resetAdminClaimForm();
             });
             
             // Admin menu navigation
@@ -1865,10 +2302,8 @@
                 await createUser();
             });
             
-            // Filter status for admin claims
-            document.getElementById('filterStatus').addEventListener('change', function() {
-                loadAdminClaims();
-            });
+            // Claims dropdown functionality
+            setupClaimsDropdown();
             
             // Filter status for users
             document.getElementById('userStatusFilter').addEventListener('change', function() {
@@ -1898,6 +2333,55 @@
             // Table button clicks
             document.addEventListener('click', async function(e) {
                 await handleTableButtonClick(e);
+            });
+        }
+        
+        function setupClaimsDropdown() {
+            const dropdownBtn = document.getElementById('dropdownBtn');
+            const dropdownContent = document.getElementById('dropdownContent');
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            const dropdownText = document.getElementById('dropdownText');
+            
+            // Toggle dropdown
+            dropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+            });
+            
+            // Handle dropdown item selection
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items
+                    dropdownItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to selected item
+                    this.classList.add('active');
+                    
+                    // Update dropdown text
+                    const filterText = this.textContent.trim();
+                    dropdownText.textContent = filterText;
+                    
+                    // Set current filter
+                    currentFilter = this.getAttribute('data-filter');
+                    
+                    // Close dropdown
+                    dropdownContent.classList.remove('show');
+                    
+                    // Load claims with new filter
+                    loadAdminClaims();
+                });
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdownContent.classList.remove('show');
+            });
+            
+            // Prevent dropdown from closing when clicking inside
+            dropdownContent.addEventListener('click', function(e) {
+                e.stopPropagation();
             });
         }
         
@@ -1968,6 +2452,9 @@
             document.getElementById('workerUserName').textContent = currentUser.name || currentUser.email;
             document.getElementById('workerUserId').textContent = `Worker ID: ${currentUser.id || 'N/A'}`;
             
+            // Update claimant name
+            document.getElementById('claimantName').value = currentUser.name || currentUser.email || 'Test';
+            
             // Load claims
             loadWorkerClaims();
         }
@@ -1979,6 +2466,9 @@
             
             // Update user info
             document.getElementById('adminUserName').textContent = currentUser.name || currentUser.email;
+            
+            // Update claimant name
+            document.getElementById('adminClaimantName').value = currentUser.name || currentUser.email || 'Admin';
             
             // Load claims and users
             loadAdminClaims();
@@ -2052,18 +2542,29 @@
                     myClaimsTableBody.innerHTML = '';
                     
                     if (data.data && data.data.length > 0) {
-                        // Update stats
-                        updateWorkerStats(data.data);
+                        // Filter to only show current user's claims for worker
+                        const userClaims = data.data.filter(claim => 
+                            claim.user && claim.user._id === currentUser._id
+                        );
                         
-                        // Populate tables
-                        data.data.forEach(claim => {
-                            const row = createClaimRow(claim, false);
-                            tableBody.appendChild(row.cloneNode(true));
-                            myClaimsTableBody.appendChild(row);
-                        });
+                        // Update stats with user's claims only
+                        updateWorkerStats(userClaims);
                         
-                        // Show tables
-                        showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], true);
+                        if (userClaims.length > 0) {
+                            // Populate tables
+                            userClaims.forEach(claim => {
+                                const row = createClaimRow(claim, false);
+                                tableBody.appendChild(row.cloneNode(true));
+                                myClaimsTableBody.appendChild(row);
+                            });
+                            
+                            // Show tables
+                            showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], true);
+                        } else {
+                            // Show empty state
+                            showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], false);
+                            resetWorkerStats();
+                        }
                     } else {
                         // Show empty state
                         showTableState([loadingElement, myClaimsLoadingElement], [emptyElement, myClaimsEmptyElement], [tableElement, myClaimsTableElement], false);
@@ -2079,7 +2580,7 @@
             }
         }
         
-        // Function to load admin claims
+        // Function to load admin claims with filter
         async function loadAdminClaims() {
             if (!currentUser || !authToken) return;
             
@@ -2087,7 +2588,6 @@
             const emptyElement = document.getElementById('adminClaimsEmpty');
             const tableElement = document.getElementById('adminClaimsTable');
             const tableBody = document.getElementById('adminClaimsTableBody');
-            const filterStatus = document.getElementById('filterStatus').value;
             
             // Show loading state
             showLoadingState([loadingElement], [emptyElement], [tableElement]);
@@ -2113,13 +2613,36 @@
                     tableBody.innerHTML = '';
                     
                     if (data.data && data.data.length > 0) {
-                        // Filter claims
+                        // Filter claims based on current filter
                         let filteredClaims = data.data;
-                        if (filterStatus !== 'all') {
-                            filteredClaims = data.data.filter(claim => claim.status === filterStatus);
+                        
+                        switch(currentFilter) {
+                            case 'submitted':
+                                // Submitted claims are typically new or pending
+                                filteredClaims = data.data.filter(claim => 
+                                    claim.status === 'new' || claim.status === 'pending' || claim.status === 'submitted'
+                                );
+                                break;
+                            case 'approved':
+                                filteredClaims = data.data.filter(claim => claim.status === 'approved');
+                                break;
+                            case 'paid':
+                                filteredClaims = data.data.filter(claim => claim.status === 'paid');
+                                break;
+                            case 'pending':
+                                filteredClaims = data.data.filter(claim => claim.status === 'pending');
+                                break;
+                            case 'rejected':
+                                filteredClaims = data.data.filter(claim => claim.status === 'rejected');
+                                break;
+                            case 'all':
+                            default:
+                                // Show all claims
+                                filteredClaims = data.data;
+                                break;
                         }
                         
-                        // Update stats
+                        // Update stats with all claims (not filtered)
                         updateAdminStats(data.data);
                         
                         if (filteredClaims.length > 0) {
@@ -2207,6 +2730,7 @@
             switch(status) {
                 case 'new':
                 case 'pending':
+                case 'submitted':
                     return '<span class="status-badge status-pending">Pending</span>';
                 case 'approved':
                     return '<span class="status-badge status-approved">Approved</span>';
@@ -2359,6 +2883,90 @@
             }
         }
         
+        // Function to calculate totals for expense table
+        function calculateTotals(formType = 'worker') {
+            
+            const prefix = formType === 'worker' ? '' : 'admin';
+            const cash = parseFloat(document.getElementById(`${prefix}cashAmount`).value) || 0;
+            const bankTransfer = parseFloat(document.getElementById(`${prefix}bankTransferAmount`).value) || 0;
+            const vat = parseFloat(document.getElementById(`${prefix}vatAmount`).value) || 0;
+            const total = cash + bankTransfer + vat;
+            
+            // Update total field
+            document.getElementById(`${prefix}TotalAmount`).value = total.toFixed(2);
+            
+
+            
+            // Update subtotal row
+            document.getElementById(`${prefix}SubTotalCash`).textContent = cash.toFixed(2);
+            document.getElementById(`${prefix}SubTotalBank`).textContent = bankTransfer.toFixed(2);
+            document.getElementById(`${prefix}SubTotalVat`).textContent = vat.toFixed(2);
+            document.getElementById(`${prefix}SubTotalTotal`).textContent = total.toFixed(2);
+
+        }
+        
+        // Function to reset the new claim form
+        function resetNewClaimForm() {
+            document.getElementById('claimantName').value = currentUser ? (currentUser.name || currentUser.email || 'Test') : 'Test';
+            document.getElementById('claimType').value = '';
+            document.getElementById('companyName').value = '';
+            document.getElementById('contactPerson').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('claimDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expenseType').value = 'None';
+            document.getElementById('expenseDescription').value = '';
+            document.getElementById('otherInfo').checked = true;
+            document.getElementById('currency').value = 'None';
+            document.getElementById('creditCard').checked = true;
+            document.getElementById('cashAmount').value = '0.00';
+            document.getElementById('bankTransferAmount').value = '0.00';
+            document.getElementById('vatAmount').value = '0.00';
+            document.getElementById('workerTotalAmount').value = '0.00';
+            document.getElementById('reason').value = '';
+            document.getElementById('claimNotes').value = '';
+            document.getElementById('claimImage').value = '';
+            
+            // Reset subtotal row
+            document.getElementById('workerSubTotalCash').textContent = '00.00';
+            document.getElementById('workerSubTotalBank').textContent = '00.00';
+            document.getElementById('workerSubTotalVat').textContent = '00.00';
+            document.getElementById('workerSubTotalTotal').textContent = '00.00';
+            
+            // Update reference number
+            document.getElementById('claimReferenceNo').textContent = generateReferenceNo();
+            
+            showToast('Form has been reset.', 'info');
+        }
+        
+        // Function to reset the admin claim form
+        function resetAdminClaimForm() {
+            document.getElementById('adminClaimantName').value = currentUser ? (currentUser.name || currentUser.email || 'Admin') : 'Admin';
+            document.getElementById('adminClaimType').value = '';
+            document.getElementById('adminCompanyName').value = '';
+            document.getElementById('adminContactPerson').value = '';
+            document.getElementById('adminContactEmail').value = '';
+            document.getElementById('adminClaimDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('adminExpenseType').value = 'None';
+            document.getElementById('adminExpenseDescription').value = '';
+            document.getElementById('adminTotalAmount').value = '';
+            document.getElementById('adminClaimReceipt').value = 'yes';
+            document.getElementById('adminReason').value = '';
+            document.getElementById('adminClaimNotes').value = '';
+            document.getElementById('adminClaimImage').value = '';
+
+
+            document.getElementById('adminSubTotalCash').textContent = '00.00';
+            document.getElementById('adminSubTotalBank').textContent = '00.00';
+            document.getElementById('adminSubTotalVat').textContent = '00.00';
+            document.getElementById('adminSubTotalTotal').textContent = '00.00';
+            
+            
+            // Update reference number
+            document.getElementById('adminClaimReferenceNo').textContent = generateReferenceNo();
+            
+            showToast('Form has been reset.', 'info');
+        }
+        
         // Function to submit a new claim
         async function submitNewClaim(role) {
             if (!currentUser || !authToken) {
@@ -2366,32 +2974,66 @@
                 return;
             }
             
-            let claimDate, claimCategory, claimDescription, claimAmount, claimNotes, claimReceipt, claimId, claimImage;
+            let claimDate, claimType, description, amount, notes, image, reason;
             let submitBtn, submitBtnText, submitBtnSpinner, formError, formErrorMessage;
+            let claimantName, companyName, contactPerson, contactEmail;
+            let expenseType, expenseDesc, otherInfo, currency, creditCard;
+            let cashAmount, bankTransferAmount, vatAmount, totalAmount;
             
             if (role === 'worker') {
+                claimantName = document.getElementById('claimantName').value;
                 claimDate = document.getElementById('claimDate').value;
-                claimId = document.getElementById('referenceNo').value;
-                claimCategory = document.getElementById('claimCategory').value;
-                claimDescription = document.getElementById('claimDescription').value;
-                claimAmount = document.getElementById('claimAmount').value;
-                claimNotes = document.getElementById('claimNotes').value;
-                claimReceipt = document.getElementById('claimReceipt').value;
-                claimImage = document.getElementById('claimImage').files[0];
+                claimType = document.getElementById('claimType').value;
+                companyName = document.getElementById('companyName').value;
+                contactPerson = document.getElementById('contactPerson').value;
+                contactEmail = document.getElementById('contactEmail').value;
+                expenseType = document.getElementById('expenseType').value;
+                expenseDesc = document.getElementById('expenseDescription').value;
+                
+                currency = document.getElementById('currency').value;
+                creditCard = document.getElementById('creditCard').checked;
+                cashAmount = parseFloat(document.getElementById('cashAmount').value) || 0;
+                bankTransferAmount = parseFloat(document.getElementById('bankTransferAmount').value) || 0;
+                vatAmount = parseFloat(document.getElementById('vatAmount').value) || 0;
+                totalAmount = parseFloat(document.getElementById('workerTotalAmount').value) || 0;
+                reason = document.getElementById('reason').value;
+                notes = document.getElementById('claimNotes').value;
+                image = document.getElementById('claimImage').files[0];
+                
+
+                amount = totalAmount;
+                
                 submitBtn = document.getElementById('submitClaimBtn');
                 submitBtnText = document.getElementById('submitClaimBtnText');
                 submitBtnSpinner = document.getElementById('submitClaimBtnSpinner');
                 formError = document.getElementById('claimFormError');
                 formErrorMessage = document.getElementById('claimFormErrorMessage');
             } else {
+                claimantName = document.getElementById('adminClaimantName').value;
                 claimDate = document.getElementById('adminClaimDate').value;
-                claimId = document.getElementById('adminReferenceNo').value;
-                claimCategory = document.getElementById('adminClaimCategory').value;
-                claimDescription = document.getElementById('adminClaimDescription').value;
-                claimAmount = document.getElementById('adminClaimAmount').value;
-                claimReceipt = document.getElementById('adminClaimReceipt').value;
-                claimImage = document.getElementById('adminClaimImage').files[0];
-                claimNotes = '';
+                claimType = document.getElementById('adminClaimType').value;
+                companyName = document.getElementById('adminCompanyName').value;
+                contactPerson = document.getElementById('adminContactPerson').value;
+                contactEmail = document.getElementById('adminContactEmail').value;
+                description = document.getElementById('adminExpenseDescription').value;
+                amount = parseFloat(document.getElementById('adminTotalAmount').value) || 0;
+                reason = document.getElementById('adminReason').value;
+                notes = document.getElementById('adminClaimNotes').value;
+                image = document.getElementById('adminClaimImage').files[0];
+                creditCard = document.getElementById('adminCreditCard').checked;
+                
+                // Set default values for other fields
+                expenseType = document.getElementById("adminExpenseType").value || 'None';
+                expenseDesc = description;
+
+                currency = document.getElementById('adminCurrency').value;
+                
+                cashAmount = parseFloat(document.getElementById('adminCashAmount').value) || 0;
+                bankTransferAmount = parseFloat(document.getElementById('adminBankTransferAmount').value) || 0;
+                vatAmount = parseFloat(document.getElementById('adminVatAmount').value) || 0;
+                
+                amount = totalAmount;
+                
                 submitBtn = document.getElementById('submitAdminClaimBtn');
                 submitBtnText = document.getElementById('submitAdminClaimBtnText');
                 submitBtnSpinner = document.getElementById('submitAdminClaimBtnSpinner');
@@ -2399,10 +3041,16 @@
                 formErrorMessage = document.getElementById('adminClaimFormErrorMessage');
             }
             
-            // Validate
-            if (!claimDate || !claimCategory || !claimDescription || !claimAmount || !claimId) {
+            // Validate required fields
+            if (!claimantName || !claimDate || !claimType || !reason) {
                 formError.style.display = 'block';
-                formErrorMessage.textContent = 'Please fill in all required fields';
+                formErrorMessage.textContent = 'Please fill in all required fields (ClaimantName, Date, Claim Type, and Reason)';
+                return;
+            }
+            
+            if (totalAmount <= 0) {
+                formError.style.display = 'block';
+                formErrorMessage.textContent = 'Please enter a valid amount greater than 0';
                 return;
             }
             
@@ -2416,13 +3064,26 @@
                 // Create FormData for file upload
                 const formData = new FormData();
                 formData.append('date', claimDate);
-                formData.append('claim_id', claimId);
-                formData.append('category', claimCategory);
-                formData.append('description', claimDescription);
-                formData.append('amount', parseFloat(claimAmount));
-                formData.append('receipt', claimReceipt === 'yes');
-                if (claimNotes) formData.append('notes', claimNotes);
-                if (claimImage) formData.append('image', claimImage);
+                formData.append('claim_id', generateReferenceNo());
+                formData.append('category', claimType);
+                formData.append('expense_description', expenseDesc);
+                formData.append('amount', amount);
+                formData.append('receipt', creditCard);
+                
+                // Add new fields
+                formData.append('claimant_name', claimantName);
+                formData.append('company_name', companyName || '');
+                formData.append('contact_person', contactPerson || '');
+                formData.append('contact_email', contactEmail || '');
+                formData.append('expense_type', expenseType);
+                formData.append('currency', currency);
+                formData.append('cash_amount', cashAmount);
+                formData.append('bank_transfer_amount', bankTransferAmount);
+                formData.append('vat_amount', vatAmount);
+                formData.append('reason', reason);
+                
+                if (notes) formData.append('notes', notes);
+                if (image) formData.append('image', image);
                 
                 const response = await fetch(`${API_BASE_URL}/claims`, {
                     method: 'POST',
@@ -2439,10 +3100,10 @@
                     
                     // Reset form
                     if (role === 'worker') {
-                        resetForm('newClaimForm', 'claimDate', generateReferenceNo());
+                        resetNewClaimForm();
                         switchWorkerSection('manageClaimSection', 'Manage Claim Sheet');
                     } else {
-                        resetForm('adminNewClaimForm', 'adminClaimDate', generateReferenceNo());
+                        resetAdminClaimForm();
                         switchAdminSection('adminManageClaimSection', 'Manage Claims');
                     }
                     
@@ -2471,101 +3132,119 @@
         async function loadUsers() {
             const statusFilter = document.getElementById('userStatusFilter').value;
             
-            const res = await fetch(`${API_BASE_URL}/users`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await res.json();
+            const loadingElement = document.getElementById('usersLoading');
+            const emptyElement = document.getElementById('usersEmpty');
+            const tableElement = document.getElementById('usersTable');
+            const tableBody = document.getElementById('usersTableBody');
             
-            if (res.ok) {
-                const usersTableBody = document.getElementById('usersTableBody');
-                usersTableBody.innerHTML = '';
-                if (data.data && data.data.length > 0) {
-                    // Filter users by status
-                    let filteredUsers = data.data;
-                    if (statusFilter !== 'all') {
-                        filteredUsers = data.data.filter(user => user.status === statusFilter);
+            // Show loading state
+            loadingElement.style.display = 'block';
+            emptyElement.style.display = 'none';
+            tableElement.style.display = 'none';
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
                     }
-                    
-                    if (filteredUsers.length > 0) {
-                        filteredUsers.forEach(user => {
-                            const row = document.createElement('tr');
-                            
-                            // Create action buttons based on user status
-                            let actionButtons = '';
-                            if (user.status === 'active') {
-                                actionButtons = `
-                                    <button class="btn-warning btn-small deactivate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                        <i class="fas fa-ban"></i> Deactivate
-                                    </button>
-                                    <button class="btn-danger btn-small suspend-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                        <i class="fas fa-lock"></i> Suspend
-                                    </button>
-                                `;
-                            } else if (user.status === 'inactive') {
-                                actionButtons = `
-                                    <button class="btn-success btn-small activate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                        <i class="fas fa-check-circle"></i> Activate
-                                    </button>
-                                    <button class="btn-danger btn-small suspend-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                        <i class="fas fa-lock"></i> Suspend
-                                    </button>
-                                `;
-                            } else if (user.status === 'suspended') {
-                                actionButtons = `
-                                    <button class="btn-success btn-small activate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                        <i class="fas fa-check-circle"></i> Activate
-                                    </button>
-                                    <button class="btn-warning btn-small deactivate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                        <i class="fas fa-ban"></i> Deactivate
-                                    </button>
-                                `;
-                            }
-                            
-                            row.innerHTML = `
-                                <td>${user.employee_id || user._id || 'N/A'}</td>
-                                <td>${user.name || 'N/A'}</td>
-                                <td>${user.email || 'N/A'}</td>
-                                <td>${user.role || 'N/A'}</td>
-                                <td>${getUserStatusBadge(user.status || 'active')}</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-primary btn-small view-user-btn" data-id="${user._id}">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
-                                        ${actionButtons}
-                                        <button class="btn-danger btn-small delete-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </div>
-                                </td>
-                            `;
-                            usersTableBody.appendChild(row);
-                        });
+                });
+
+                const data = await res.json();
+                
+                if (res.ok) {
+                    tableBody.innerHTML = '';
+                    if (data.data && data.data.length > 0) {
+                        // Filter users by status
+                        let filteredUsers = data.data;
+                        if (statusFilter !== 'all') {
+                            filteredUsers = data.data.filter(user => user.status === statusFilter);
+                        }
                         
-                        // Show table
-                        document.getElementById('usersLoading').style.display = 'none';
-                        document.getElementById('usersTable').style.display = 'table';
-                        document.getElementById('usersEmpty').style.display = 'none';
+                        if (filteredUsers.length > 0) {
+                            filteredUsers.forEach(user => {
+                                const row = document.createElement('tr');
+                                
+                                // Create action buttons based on user status
+                                let actionButtons = '';
+                                if (user.status === 'active') {
+                                    actionButtons = `
+                                        <button class="btn-warning btn-small deactivate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-ban"></i> Deactivate
+                                        </button>
+                                        <button class="btn-danger btn-small suspend-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-lock"></i> Suspend
+                                        </button>
+                                    `;
+                                } else if (user.status === 'inactive') {
+                                    actionButtons = `
+                                        <button class="btn-success btn-small activate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-check-circle"></i> Activate
+                                        </button>
+                                        <button class="btn-danger btn-small suspend-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-lock"></i> Suspend
+                                        </button>
+                                    `;
+                                } else if (user.status === 'suspended') {
+                                    actionButtons = `
+                                        <button class="btn-success btn-small activate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-check-circle"></i> Activate
+                                        </button>
+                                        <button class="btn-warning btn-small deactivate-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                            <i class="fas fa-ban"></i> Deactivate
+                                        </button>
+                                    `;
+                                }
+                                
+                                row.innerHTML = `
+                                    <td>${user.employee_id || user._id || 'N/A'}</td>
+                                    <td>${user.name || 'N/A'}</td>
+                                    <td>${user.email || 'N/A'}</td>
+                                    <td>${user.role || 'N/A'}</td>
+                                    <td>${getUserStatusBadge(user.status || 'active')}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn-primary btn-small view-user-btn" data-id="${user._id}">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                            ${actionButtons}
+                                            <button class="btn-danger btn-small delete-user-btn" data-id="${user._id}" data-name="${user.name || 'User'}">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                `;
+                                tableBody.appendChild(row);
+                            });
+                            
+                            // Show table
+                            loadingElement.style.display = 'none';
+                            tableElement.style.display = 'table';
+                            emptyElement.style.display = 'none';
+                        } else {
+                            // Show empty state for filtered results
+                            loadingElement.style.display = 'none';
+                            emptyElement.style.display = 'block';
+                            tableElement.style.display = 'none';
+                        }
                     } else {
-                        // Show empty state for filtered results
-                        document.getElementById('usersLoading').style.display = 'none';
-                        document.getElementById('usersEmpty').style.display = 'block';
-                        document.getElementById('usersTable').style.display = 'none';
+                        // Show empty state
+                        loadingElement.style.display = 'none';
+                        emptyElement.style.display = 'block';
+                        tableElement.style.display = 'none';
                     }
                 } else {
-                    // Show empty state
-                    document.getElementById('usersLoading').style.display = 'none';
-                    document.getElementById('usersEmpty').style.display = 'block';
-                    document.getElementById('usersTable').style.display = 'none';
+                    showToast(data.message || 'Failed to load users', 'error');
+                    loadingElement.style.display = 'none';
+                    emptyElement.style.display = 'block';
+                    tableElement.style.display = 'none';
                 }
-            } else {
-                showToast(data.message || 'Failed to load users', 'error');
-                return;
+            } catch (error) {
+                showToast('Failed to load users. Please try again.', 'error');
+                loadingElement.style.display = 'none';
+                emptyElement.style.display = 'block';
+                tableElement.style.display = 'none';
             }
         }
         
@@ -2587,7 +3266,7 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/activate`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -2640,7 +3319,7 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE_URL}/users/${userId}/status`, {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/deactivate`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -2752,7 +3431,7 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}/delete`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -2788,53 +3467,57 @@
         async function viewUserDetails(userId) {
             if (!currentUser || !authToken) return;
             
-            const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await res.json();
-            
-            if (res.ok) {
-                const user = data.data;
-                let userDetailsHtml = `
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Employee ID</div>
-                        <div class="claim-detail-value">${user.employee_id || 'N/A'}</div>
-                    </div>
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Name</div>
-                        <div class="claim-detail-value">${user.name || 'N/A'}</div>
-                    </div>
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Email</div>
-                        <div class="claim-detail-value">${user.email || 'N/A'}</div>
-                    </div>
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Role</div>
-                        <div class="claim-detail-value">${user.role || 'N/A'}</div>
-                    </div>
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Status</div>
-                        <div class="claim-detail-value">${getUserStatusBadge(user.status || 'active')}</div>
-                    </div>
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Department</div>
-                        <div class="claim-detail-value">${user.department || 'N/A'}</div>
-                    </div>
-                    <div class="claim-detail-item">
-                        <div class="claim-detail-label">Created At</div>
-                        <div class="claim-detail-value">${new Date(user.createdAt).toLocaleDateString('en-GB')}</div>
-                    </div>
-                `;
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await res.json();
                 
-                document.getElementById('viewUserDetails').innerHTML = userDetailsHtml;
-                document.getElementById('modalUserTitle').textContent = `User Details: ${user.name || 'N/A'}`;
-                showModal('viewUserModal');
-            } else {
-                showToast(data.message || 'Failed to load user details', 'error');
+                if (res.ok) {
+                    const user = data.data;
+                    let userDetailsHtml = `
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Employee ID</div>
+                            <div class="claim-detail-value">${user.employee_id || 'N/A'}</div>
+                        </div>
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Name</div>
+                            <div class="claim-detail-value">${user.name || 'N/A'}</div>
+                        </div>
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Email</div>
+                            <div class="claim-detail-value">${user.email || 'N/A'}</div>
+                        </div>
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Role</div>
+                            <div class="claim-detail-value">${user.role || 'N/A'}</div>
+                        </div>
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Status</div>
+                            <div class="claim-detail-value">${getUserStatusBadge(user.status || 'active')}</div>
+                        </div>
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Department</div>
+                            <div class="claim-detail-value">${user.department || 'N/A'}</div>
+                        </div>
+                        <div class="claim-detail-item">
+                            <div class="claim-detail-label">Created At</div>
+                            <div class="claim-detail-value">${new Date(user.createdAt).toLocaleDateString('en-GB')}</div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('viewUserDetails').innerHTML = userDetailsHtml;
+                    document.getElementById('modalUserTitle').textContent = `User Details: ${user.name || 'N/A'}`;
+                    showModal('viewUserModal');
+                } else {
+                    showToast(data.message || 'Failed to load user details', 'error');
+                }
+            } catch (error) {
+                showToast('Failed to load user details. Please try again.', 'error');
             }
         }
         
@@ -2907,6 +3590,25 @@
                     <div class="claim-detail-value">${claim.receipt ? 'Yes' : 'No'}</div>
                 </div>
             `;
+            
+            // Add additional fields if they exist
+            if (claim.claimant_name) {
+                detailsHTML += `
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Claimant Name</div>
+                        <div class="claim-detail-value">${claim.claimant_name}</div>
+                    </div>
+                `;
+            }
+            
+            if (claim.reason) {
+                detailsHTML += `
+                    <div class="claim-detail-item">
+                        <div class="claim-detail-label">Reason</div>
+                        <div class="claim-detail-value">${claim.reason}</div>
+                    </div>
+                `;
+            }
             
             // Add image if available
             if (claim.imageUrl) {
@@ -3249,20 +3951,8 @@
             }
         }
         
-        function resetForm(formId, dateFieldId, referenceNo = null) {
-            const form = document.getElementById(formId);
-            form.reset();
-            document.getElementById(dateFieldId).value = new Date().toISOString().split('T')[0];
-            if (referenceNo && document.getElementById('referenceNo')) {
-                document.getElementById('referenceNo').value = referenceNo;
-            }
-            if (referenceNo && document.getElementById('adminReferenceNo')) {
-                document.getElementById('adminReferenceNo').value = referenceNo;
-            }
-        }
-        
         function generateReferenceNo() {
-            const prefix = 'HFA';
+            const prefix = 'ISL';
             const randomNum = Math.floor(100000 + Math.random() * 900000);
             return `${prefix}-${randomNum}`;
         }
@@ -3286,7 +3976,7 @@
         
         function updateWorkerStats(claims) {
             const total = claims.length;
-            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
+            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new' || c.status === 'submitted').length;
             const approved = claims.filter(c => c.status === 'approved').length;
             const rejected = claims.filter(c => c.status === 'rejected').length;
             
@@ -3305,7 +3995,7 @@
         
         function updateAdminStats(claims) {
             const total = claims.length;
-            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new').length;
+            const pending = claims.filter(c => c.status === 'pending' || c.status === 'new' || c.status === 'submitted').length;
             const approved = claims.filter(c => c.status === 'approved').length;
             const rejected = claims.filter(c => c.status === 'rejected').length;
             const paid = claims.filter(c => c.status === 'paid').length;
